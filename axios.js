@@ -13,7 +13,7 @@ axios.interceptors.response.use(function (response) {
 }, function (error) {
   if (error.response.status === 401) {
     localStorage.removeItem('accessToken')
-    localStorage.removeItem('agriogyemail')
+    localStorage.removeItem('username')
     delete axios.defaults.headers.common.Authorization
     window.location.reload();
   }

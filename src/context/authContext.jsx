@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { createContext, useReducer } from 'react'
 import axios from '../../axios'
 import { showSnackBar } from 'src/redux/actions/snackbarAction'
@@ -79,38 +81,38 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'LOGOUT' })
     }
 
-    // useEffect(() => {
-    //     try {
-    //         const accessToken = window.localStorage.getItem('accessToken')
-    //         const username = window.localStorage.getItem('username')
-    //         if (accessToken && username) {
-    //             setSession(accessToken, username)
-    //             dispatch({
-    //                 type: 'LOGIN',
-    //                 payload: {
-    //                     isAuthenticated: true,
-    //                     username: username,
-    //                 },
-    //             })
-    //         } else {
-    //             dispatch({
-    //                 type: 'LOGOUT',
-    //                 payload: {
-    //                     isAuthenticated: false,
-    //                     username: null,
-    //                 },
-    //             })
-    //         }
-    //     } catch (err) {
-    //         dispatch({
-    //             type: 'LOGOUT',
-    //             payload: {
-    //                 isAuthenticated: false,
-    //                 username: null,
-    //             },
-    //         })
-    //     }
-    // }, [])
+    useEffect(() => {
+        try {
+            const accessToken = window.localStorage.getItem('accessToken')
+            const username = window.localStorage.getItem('username')
+            if (accessToken && username) {
+                setSession(accessToken, username)
+                dispatch({
+                    type: 'LOGIN',
+                    payload: {
+                        isAuthenticated: true,
+                        username: username,
+                    },
+                })
+            } else {
+                dispatch({
+                    type: 'LOGOUT',
+                    payload: {
+                        isAuthenticated: false,
+                        username: null,
+                    },
+                })
+            }
+        } catch (err) {
+            dispatch({
+                type: 'LOGOUT',
+                payload: {
+                    isAuthenticated: false,
+                    username: null,
+                },
+            })
+        }
+    }, [])
 
 
     return (

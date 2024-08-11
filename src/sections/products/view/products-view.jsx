@@ -13,7 +13,7 @@ import ProductSort from '../product-sort';
 import ProductFilters from '../product-filters';
 import ProductCartWidget from '../product-cart-widget';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllProducts, addNewProduct, deleteProduct } from '../../../redux/actions/productAction';
+import { getAllProducts, addNewProduct, deleteProduct, updateProduct } from '../../../redux/actions/productAction';
 import { getAllCompany } from 'src/redux/actions/companyAction';
 import { getAllCategory } from 'src/redux/actions/categoryAction';
 
@@ -21,18 +21,18 @@ import Fade from '@mui/material/Fade';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Modal as BaseModal } from '@mui/base/Modal';
-import { Button, FormControl, InputLabel, TextField, Box } from '@mui/material';
-import { useRouter } from 'src/routes/hooks';
+import { Button, FormControl, InputLabel, TextField, Box, FormControlLabel } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
 
 
 // ----------------------------------------------------------------------
 
 const initialState = {
-  name: "",
-  category_id: "",
-  company_id: "",
-  usp: "",
-  ingredients: "",
+  name: null,
+  category_id: null,
+  company_id: null,
+  usp: null,
+  ingredients: null,
   image: null
 }
 
@@ -52,7 +52,14 @@ export default function ProductsView() {
   const handleClose = () => {
     setOpen(false)
     setAddProduct(initialState)
+    setChecked(false)
   }
+
+  const [checked, setChecked] = useState(false);
+
+  const handleTopProduct = (event) => {
+    setChecked(event.target.checked);
+  };
 
   useEffect(() => {
     dispatch(getAllProducts());
@@ -167,6 +174,7 @@ export default function ProductsView() {
     data.append('usp', addProduct.usp)
     data.append('ingredients', addProduct.ingredients)
     data.append('image', addProduct.image)
+    data.append('is_top', checked)
     dispatch(addNewProduct(data))
     handleClose()
   }
@@ -175,13 +183,27 @@ export default function ProductsView() {
     dispatch(deleteProduct(id))
   }
 
+
+  const handleEdit = (id, productDetails) => {
+    const data = new FormData();
+    console.log(productDetails)
+    data.append('name', productDetails.name)
+    data.append('category_id', productDetails.category_id)
+    data.append('company_id', productDetails.company_id)
+    data.append('usp', productDetails.usp)
+    data.append('ingredients', productDetails.ingredients)
+    if(typeof(productDetails.image) !== "string"){
+      data.append('image', productDetails.image)
+    }
+    data.append('is_top', productDetails.is_top)
+    dispatch(updateProduct(id, data))
+  }
+
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 5 }}>
         Products
       </Typography>
-
-
 
       <Stack
         direction="row"
@@ -271,6 +293,15 @@ export default function ProductsView() {
                       multiline
                       onChange={handleChangeIngredients}
                     />
+                    <FormControlLabel 
+                      control={
+                        <Checkbox 
+                          checked={checked}
+                          onChange={handleTopProduct}
+                        />
+                      }
+                      label="Is Top Product?"
+                    />
                   </Stack>
                   <Stack direction="column" spacing={5}>
                     <Box>
@@ -322,7 +353,7 @@ export default function ProductsView() {
       <Grid container spacing={3}>
         {state && getCompany && getCategory && state?.map((product) => (
           <Grid key={product._id} xs={12} sm={6} md={3}>
-            <ProductCard product={product} company={getCompany} category={getCategory} handleDelete={handleDelete} />
+            <ProductCard product={product} company={getCompany} category={getCategory} handleDelete={handleDelete} handleEdit={handleEdit} />
           </Grid>
         ))}
       </Grid>

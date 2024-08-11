@@ -12,18 +12,12 @@ import { styled, css } from '@mui/system';
 import Fade from '@mui/material/Fade';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { useDispatch } from 'react-redux';
-
-import { fCurrency } from 'src/utils/format-number';
-
-import Label from 'src/components/label';
-import { ColorPreview } from 'src/components/color-utils';
-import { Button, FormControl, InputLabel, TextField } from '@mui/material';
+import { Button, FormControl, InputLabel, TextField, FormControlLabel, Checkbox } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 
-export default function ShopProductCard({ product, company, category, handleDelete = (id) => { }, handleEdit = (id) => { } }) {
+export default function ShopProductCard({ product, company, category, handleDelete = (id) => { }, handleEdit = (id, productDetails) => { } }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -33,7 +27,17 @@ export default function ShopProductCard({ product, company, category, handleDele
 
   const getCompany = company
   const getCategory = category
+
   const [updateState, setUpdateState] = useState(product)
+
+  const handleTopProduct = (event) => {
+    const { checked } = event.target
+    setUpdateState((prev) => ({
+      ...prev,
+      is_top: checked
+    }))
+  };
+
 
   const handleChangeProduct = (event) => {
     const { value } = event.target
@@ -81,9 +85,28 @@ export default function ShopProductCard({ product, company, category, handleDele
   }
 
   const onEdit = () => {
-    handleEdit(product._id)
+    handleEdit(product._id, updateState)
     handleClose()
   }
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) {
+      setUpdateState((prev) => ({
+        ...prev,
+        image: file
+      }))
+      return;
+    }
+
+    setUpdateState((prev) => ({
+      ...prev,
+      image: file
+    }));
+  };
+
+
 
   const renderImg = (
     <Box
@@ -133,7 +156,6 @@ export default function ShopProductCard({ product, company, category, handleDele
                     value={updateState.company_id}
                     label="Company"
                     onChange={handleChangeCompany}
-                  // sx={{b }}
                   >
                     {getCompany && getCompany.length > 0 ?
                       getCompany?.map((data) => (
@@ -182,17 +204,46 @@ export default function ShopProductCard({ product, company, category, handleDele
                   multiline
                   onChange={handleChangeIngredients}
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={updateState.is_top}
+                      onChange={handleTopProduct}
+                    />
+                  }
+                  label="Is Top Product?"
+                />
               </Stack>
               <Stack direction="column" spacing={5}>
                 <Box>
-                  <img
-                    src={product.image}
+                  {typeof updateState.image === "string" && updateState.image && <img
+                    src={updateState.image}
                     width="250px"
                     height="250px"
-                  />
+                  />}
+                  {typeof updateState.image !== "string" && updateState.image && <img
+                    src={URL.createObjectURL(updateState.image)}
+                    width="250px"
+                    height="250px"
+                  />}
                 </Box>
                 <Box>
-                  <Button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                    id="image-file-input"
+                    name='img'
+                  />
+                  <label htmlFor="image-file-input">
+                    <Button variant="outlined" component="span">
+                      Select Image
+                    </Button>
+                  </label>
+                </Box>
+                <Box>
+                  <Button onClick={onEdit}>
                     Edit
                   </Button>
                   <Button color='error' onClick={onDelete}>

@@ -1,4 +1,4 @@
-import { PRODUCT, ADDPRODUCT, DELETEPRODUCT } from "../actions/productAction";
+import { PRODUCT, ADDPRODUCT, DELETEPRODUCT, UPDATEPRODUCT } from "../actions/productAction";
 
 const initialState = {
     allproducts: null,
@@ -18,6 +18,11 @@ export const productReducer = (state = initialState, action) => {
             }
         }
         case DELETEPRODUCT: {
+            return {
+                ...state
+            }
+        }
+        case UPDATEPRODUCT : {
             return {
                 ...state
             }

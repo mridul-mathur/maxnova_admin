@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 
 import PropTypes from 'prop-types'
 import Card from '@mui/material/Card';
@@ -26,8 +26,23 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 import { Modal as BaseModal } from '@mui/base/Modal';
 import { styled, css } from '@mui/system';
 import Fade from '@mui/material/Fade';
+import CustomeModel from '../model/model';
+import { useDispatch, useSelector } from 'react-redux';
+import { addNewCompany, getAllCompany } from 'src/redux/actions/companyAction';
+import { addNewCategory, getAllCategory } from 'src/redux/actions/categoryAction';
 
 // ----------------------------------------------------------------------
+
+const initialCompanyData = {
+  name: "",
+  description: "",
+  image: null
+}
+
+const initialCategoryData = {
+  name: "",
+  description: ""
+}
 
 export default function UserPage() {
   const [page, setPage] = useState(0);
@@ -36,15 +51,46 @@ export default function UserPage() {
 
   const [selected, setSelected] = useState([]);
 
-  const [newCompany, setNewCompany] = useState({
-    name: "",
-    description: "",
-    image: ""
-  })
+  const dispatch = useDispatch();
+  const allcompany = useSelector(state => state.company.allcompany)
+  const allcategory = useSelector(state => state.category.allcategory)
+
+  const [companyData, setCompanyData] = useState(null)
+  const [categoryData, setCategoryData] = useState(null)
+
+
+  const [newCompany, setNewCompany] = useState(initialCompanyData)
+  const [newCategory, setNewCategory] = useState(initialCategoryData)
+
+  useEffect(() => {
+    dispatch(getAllCompany());
+    dispatch(getAllCategory());
+  }, [])
+
+
+  useEffect(() => {
+    if (allcompany) {
+      setCompanyData(allcompany)
+    }
+  }, [allcompany])
+
+  useEffect(() => {
+    if (allcategory) {
+      setCategoryData(allcategory)
+    }
+  }, [allcategory])
 
   const handleChangeCompany = (event) => {
     const { value } = event.target
     setNewCompany((prev) => ({
+      ...prev,
+      [event.target.name]: value
+    }))
+  }
+
+  const handleChangeCategory = (event) => {
+    const { value } = event.target
+    setNewCategory((prev) => ({
       ...prev,
       [event.target.name]: value
     }))
@@ -56,10 +102,26 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setOpen(false);
+  const [openCompany, setOpenCompany] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
+
+
+  const handleOpen = (name) => {
+    if (name === "company") {
+      setOpenCompany(true)
+    } else {
+      setOpenCategory(true)
+    }
+  }
+
+  const handleClose = (name) => {
+    if (name === "company") {
+      setOpenCompany(false)
+      setNewCategory(initialCompanyData)
+    } else {
+      setOpenCategory(false)
+      setNewCategory(initialCategoryData)
+    }
   }
 
   const handleSort = (event, id) => {
@@ -84,11 +146,11 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const dataFiltered = applyFilter({
-    inputData: users,
-    comparator: getComparator(order, orderBy),
-    filterName,
-  });
+  // const dataFiltered = applyFilter({
+  //   inputData: companyData,
+  //   comparator: getComparator(order, orderBy),
+  //   filterName,
+  // });
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -107,8 +169,23 @@ export default function UserPage() {
     }));
   };
 
+  console.log(categoryData)
 
-  const notFound = !dataFiltered.length && !!filterName;
+
+  const handleAddCompany = () => {
+    const data = new FormData();
+    data.append('name', newCompany.name)
+    data.append('description', newCompany.description)
+    data.append('image', newCompany.image)
+    dispatch(addNewCompany(data))
+    handleClose("company")
+  }
+
+  const handleAddCategory = () => {
+    const data = { ...newCategory }
+    dispatch(addNewCategory(data))
+    handleClose("category")
+  }
 
   return (
     <>
@@ -116,77 +193,23 @@ export default function UserPage() {
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Company</Typography>
 
-          <Button variant="contained" color="inherit" onClick={handleOpen} startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" color="inherit" onClick={() => handleOpen("company")} startIcon={<Iconify icon="eva:plus-fill" />}>
             New Company
           </Button>
-          <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            open={open}
-            onClose={handleClose}
-            closeAfterTransition
-            slots={{ backdrop: StyledBackdrop }}
-          >
-            <Fade in={open}>
-              <ModalContent sx={style}>
-                <Stack direction="row" spacing={25}>
-                  <Stack direction="column" spacing={2}>
-                    <TextField
-                      name="name"
-                      value={newCompany.name}
-                      label="Company name"
-                      sx={{
-                        width: '350px',
-                      }}
-                      onChange={handleChangeCompany}
-                    />
-                    <TextField
-                      name="description"
-                      value={newCompany.description}
-                      label="Description"
-                      sx={{
-                        width: '350px',
-                      }}
-                      multiline
-                      onChange={handleChangeCompany}
-                    />
-                  </Stack>
-                  <Stack direction="column" spacing={5}>
-                    <Box>
-                      {newCompany.image && <img
-                        src={URL.createObjectURL(newCompany.image)}
-                        width="250px"
-                        height="250px"
-                      />}
-                    </Box>
-                    <Box>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        style={{ display: "none" }}
-                        id="image-file-input"
-                        name='img'
-                      />
-                      <label htmlFor="image-file-input">
-                        <Button variant="outlined" component="span">
-                          Select Image
-                        </Button>
-                      </label>
-                    </Box>
-                    <Box>
-                      <Button>
-                        Add
-                      </Button>
-                      <Button color='error' onClick={handleClose}>
-                        Cancel
-                      </Button>
-                    </Box>
-                  </Stack>
-                </Stack>
-              </ModalContent>
-            </Fade>
-          </Modal>
+          <CustomeModel
+            open={openCompany}
+            addImage={true}
+            data={newCompany}
+            label={{
+              name: "Company name",
+              description: "Description of company"
+            }}
+            handleClose={() => handleClose("company")}
+            handleData={handleChangeCompany}
+            handleImage={handleFileChange}
+            handleAdd={handleAddCompany}
+            isChange={false}
+          />
         </Stack>
 
         <Card>
@@ -207,41 +230,42 @@ export default function UserPage() {
                   onRequestSort={handleSort}
                   headLabel={[
                     { id: 'name', label: 'Name' },
-                    { id: '' },
+                    { id: 'empty' },
                     { id: 'description', label: 'Description' },
                     { id: '' },
                   ]}
                 />
-                <TableBody>
-                  {dataFiltered
+                {companyData && <TableBody>
+                  {companyData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
                       <UserTableRow
-                        key={row.id}
+                        key={row._id}
+                        id={row._id}
                         name={row.name}
+                        descripiton={row.description}
+                        isCompany={true}
                       />
                     ))}
 
-                  <TableEmptyRows
+                  {/* <TableEmptyRows
                     height={77}
                     emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                  />
-
-                  {notFound && <TableNoData query={filterName} />}
-                </TableBody>
+                  /> */}
+                </TableBody>}
               </Table>
             </TableContainer>
           </Scrollbar>
 
-          <TablePagination
+          {companyData && <TablePagination
             page={page}
             component="div"
-            count={users.length}
+            count={companyData.length}
             rowsPerPage={rowsPerPage}
             onPageChange={handleChangePage}
             rowsPerPageOptions={[5, 10, 25]}
             onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+          />}
         </Card>
       </Container>
 
@@ -249,9 +273,22 @@ export default function UserPage() {
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Category</Typography>
 
-          <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" color="inherit" onClick={() => handleOpen("category")} startIcon={<Iconify icon="eva:plus-fill" />}>
             New Category
           </Button>
+          <CustomeModel
+            open={openCategory}
+            addImage={false}
+            data={newCategory}
+            label={{
+              name: "Category name",
+              description: "Description of category"
+            }}
+            handleClose={() => handleClose("category")}
+            handleData={handleChangeCategory}
+            handleAdd={handleAddCategory}
+            isChange={false}
+          />
         </Stack>
 
         <Card>
@@ -272,137 +309,47 @@ export default function UserPage() {
                   onRequestSort={handleSort}
                   headLabel={[
                     { id: 'name', label: 'Name' },
-                    { id: '' },
+                    { id: 'empty' },
                     { id: 'description', label: 'Description' },
                     { id: '' },
                   ]}
                 />
-                <TableBody>
-                  {dataFiltered
+                {categoryData && <TableBody>
+                  {categoryData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => (
                       <UserTableRow
-                        key={row.id}
+                        key={row._id}
+                        id={row._id}
                         name={row.name}
-                        handleClick={(event) => handleClick(event, row.name)}
+                        descripiton={row.description}
+                        isCompany={false}
                       />
                     ))}
 
-                  <TableEmptyRows
+                  {/* <TableEmptyRows
                     height={77}
                     emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                  />
+                  /> */}
 
-                  {notFound && <TableNoData query={filterName} />}
-                </TableBody>
+                </TableBody>}
               </Table>
             </TableContainer>
           </Scrollbar>
 
-          <TablePagination
-            page={page}
-            component="div"
-            count={users.length}
-            rowsPerPage={rowsPerPage}
-            onPageChange={handleChangePage}
-            rowsPerPageOptions={[5, 10, 25]}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+          {categoryData
+            && <TablePagination
+              page={page}
+              component="div"
+              count={categoryData.length}
+              rowsPerPage={rowsPerPage}
+              onPageChange={handleChangePage}
+              rowsPerPageOptions={[5, 10, 25]}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />}
         </Card>
       </Container>
     </>
   );
 }
 
-
-const Backdrop = forwardRef((props, ref) => {
-  const { open, ...other } = props;
-  return (
-    <Fade in={open}>
-      <div ref={ref} {...other} />
-    </Fade>
-  );
-});
-
-Backdrop.propTypes = {
-  open: PropTypes.bool,
-};
-
-const blue = {
-  200: '#99CCFF',
-  300: '#66B2FF',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  700: '#0066CC',
-};
-
-const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
-};
-
-const Modal = styled(BaseModal)`
-  position: fixed;
-  z-index: 1300;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const StyledBackdrop = styled(Backdrop)`
-  z-index: -1;
-  position: fixed;
-  inset: 0;
-  background-color: rgb(0 0 0 / 0.5);
-  -webkit-tap-highlight-color: transparent;
-`;
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '50vw',
-};
-
-const ModalContent = styled('div')(
-  ({ theme }) => css`
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-weight: 500;
-    text-align: start;
-    position: relative;
-    gap: 8px;
-    overflow: hidden;
-    background-color: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-    border-radius: 8px;
-    border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-    box-shadow: 0 4px 12px
-      ${theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 0.5)' : 'rgb(0 0 0 / 0.2)'};
-    padding: 40px;
-    color: ${theme.palette.mode === 'dark' ? grey[50] : grey[900]};
-
-    & .modal-title {
-      margin: 0;
-      line-height: 1.5rem;
-      margin-bottom: 8px;
-    }
-
-    & .modal-description {
-      margin: 0;
-      line-height: 1.5rem;
-      font-weight: 400;
-      color: ${theme.palette.mode === 'dark' ? grey[400] : grey[800]};
-      margin-bottom: 4px;
-    }
-  `,
-);

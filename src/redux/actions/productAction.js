@@ -4,12 +4,11 @@ import axios from '../../../axios'
 export const PRODUCT = 'PRODUCT'
 export const ADDPRODUCT = 'ADDPRODUCT'
 export const DELETEPRODUCT = 'DELETEPRODUCT'
-
+export const UPDATEPRODUCT = 'UPDATEPRODUCT'
 
 export function getAllProducts() {
     return (dispatch) => {
         axios.get('api/product').then((res) => {
-            console.log(res.data)
             dispatch({
                 type: PRODUCT,
                 payload: res.data.findProduct
@@ -23,7 +22,6 @@ export function getAllProducts() {
 export function addNewProduct(productDetails) {
     return (dispatch) => {
         axios.post('api/product/add', productDetails).then((res) => {
-            console.log(res.data)
             dispatch(getAllProducts())
             dispatch({
                 type: ADDPRODUCT,
@@ -44,6 +42,20 @@ export function deleteProduct(id){
                 payload: res.data
             })
         }).catch((error)=>{
+            console.log(error.response.data.errors[0].msg)
+        })
+    }
+}
+
+export function updateProduct(id, data){
+    return (dispatch) => {
+        axios.patch(`api/product/${id}`, data).then((res) => {
+            dispatch(getAllProducts())
+            dispatch({
+                type: UPDATEPRODUCT,
+                payload: res.data
+            })
+        }).catch((error) => {
             console.log(error.response.data.errors[0].msg)
         })
     }

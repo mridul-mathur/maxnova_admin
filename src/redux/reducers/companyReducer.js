@@ -1,4 +1,4 @@
-import { COMPANY } from "../actions/companyAction";
+import { COMPANY, ADDCOMPANY, DELETECOMPANY } from "../actions/companyAction";
 
 const initialState = {
     allcompany: null
@@ -10,6 +10,16 @@ export const companyReducer = (state=initialState, action) => {
             return {
                 ...state,
                 allcompany: action.payload
+            }
+        }
+        case ADDCOMPANY: {
+            return {
+                ...state
+            }
+        }
+        case DELETECOMPANY : {
+            return {
+                ...state
             }
         }
         default:{
