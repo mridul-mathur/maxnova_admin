@@ -15,8 +15,8 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomeModel from './model/model';
 import { useDispatch } from 'react-redux';
-import { deleteCompany } from 'src/redux/actions/companyAction';
-import { deleteCategory } from 'src/redux/actions/categoryAction';
+import { deleteCompany, updateCompany } from 'src/redux/actions/companyAction';
+import { deleteCategory, updateCategory } from 'src/redux/actions/categoryAction';
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ export default function UserTableRow({
 
   const [open, setOpen] = useState(null);
 
+  const [modelOpen, setModelOpen] = useState(false);
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
@@ -41,28 +43,96 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const [data, setData] = useState({
+  const initialCompanyData = {
     name: name,
     description: descripiton,
-    image: isCompany ? image : null
+    image: image
+  }
+
+  const initialCategoryData = {
+    name: name,
+    description: descripiton,
+  }
+
+  const [companyData, setCompanyData] = useState({
+    name: name,
+    description: descripiton,
+    image: image
   })
 
-  const handleDelete = () => {
+  const [categoryData, setCategoryData] = useState({
+    name: name,
+    description: descripiton,
+  })
+
+  const handleChangeData = (event) => {
+    const { value } = event.target
+    if (isCompany) {
+      setCompanyData((prev) => ({
+        ...prev,
+        [event.target.name]: value
+      }))
+    } else {
+      setCategoryData((prev) => ({
+        ...prev,
+        [event.target.name]: value
+      }))
+    }
+  }
+
+  const handleOpen = () => {
+    setModelOpen(true)
+  }
+
+  const handleClose = () => {
+    handleCloseMenu()
+    setModelOpen(false)
     if(isCompany){
-      dispatch(deleteCompany(id))
+      setCompanyData(initialCompanyData)
     }else{
+      setCategoryData(initialCategoryData)
+    }
+  }
+
+  const handleDelete = () => {
+    if (isCompany) {
+      dispatch(deleteCompany(id))
+    } else {
       dispatch(deleteCategory(id))
     }
-  } 
+  }
 
   const handleEdit = () => {
-
+    if (isCompany) {
+      const data = new FormData();
+      data.append('name', companyData.name)
+      data.append('description', companyData.description)
+      if(typeof companyData.image !== "string"){
+        data.append('image', companyData.image)
+      }
+      dispatch(updateCompany(id, data))
+    } else {
+      dispatch(updateCategory(id, categoryData))
+    }
+    handleClose()
   }
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    setCompanyData((prev) => ({
+      ...prev,
+      image: file
+    }));
+  };
 
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-
         <TableCell component="th" scope="row" padding="checkbox">
           <Typography variant="subtitle2" noWrap sx={{ pl: 1 }}>
             {name}
@@ -91,13 +161,24 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleEdit}>
+        <MenuItem onClick={handleOpen}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        {/* <CustomeModel 
-          
-        /> */}
+        <CustomeModel
+          open={modelOpen}
+          addImage={isCompany ? true : false}
+          data={isCompany ? companyData : categoryData}
+          label={{
+            name: isCompany ? "Company name" : "Category name",
+            description: isCompany ? "Description of company" : "Description of category"
+          }}
+          handleClose={handleClose}
+          handleData={handleChangeData}
+          handleImage={handleFileChange}
+          handleAdd={handleEdit}
+          isChange={true}
+        />
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete

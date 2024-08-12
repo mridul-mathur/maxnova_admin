@@ -3,6 +3,7 @@ import axios from '../../../axios'
 export const COMPANY = 'COMPANY'
 export const ADDCOMPANY = 'ADDCOMPANY'
 export const DELETECOMPANY = 'DELETECOMPANY'
+export const UPDATECOMPANY = 'UPDATECOMPANY'
 
 export function getAllCompany() {
     return (dispatch) => {
@@ -43,6 +44,21 @@ export function deleteCompany(id){
             }).catch((error) => {
                 console.log(error.response.data.errors[0].msg)
             })
+        })
+    }
+}
+
+
+export function updateCompany(id, data){
+    return (dispatch) => {
+        axios.patch(`api/company/${id}`, data).then((res) => {
+            dispatch(getAllCompany())
+            dispatch({
+                type: UPDATECOMPANY,
+                payload: res.data
+            })
+        }).catch((error) => {
+            console.log(error.response.data.errors[0].msg)
         })
     }
 }

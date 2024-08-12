@@ -1,4 +1,4 @@
-import { COMPANY, ADDCOMPANY, DELETECOMPANY } from "../actions/companyAction";
+import { COMPANY, ADDCOMPANY, DELETECOMPANY, UPDATECOMPANY } from "../actions/companyAction";
 
 const initialState = {
     allcompany: null
@@ -18,6 +18,11 @@ export const companyReducer = (state=initialState, action) => {
             }
         }
         case DELETECOMPANY : {
+            return {
+                ...state
+            }
+        }
+        case UPDATECOMPANY: {
             return {
                 ...state
             }

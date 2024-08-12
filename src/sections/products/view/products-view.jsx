@@ -138,10 +138,6 @@ export default function ProductsView() {
     const file = event.target.files[0];
 
     if (!file) {
-      setAddProduct((prev) => ({
-        ...prev,
-        image: file
-      }))
       return;
     }
 
@@ -163,7 +159,6 @@ export default function ProductsView() {
       ...prev,
       image: file
     }));
-    // setError(null);
   };
 
   const handleAddProduct = async () => {

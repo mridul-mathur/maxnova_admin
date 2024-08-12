@@ -93,10 +93,6 @@ export default function ShopProductCard({ product, company, category, handleDele
     const file = event.target.files[0];
 
     if (!file) {
-      setUpdateState((prev) => ({
-        ...prev,
-        image: file
-      }))
       return;
     }
 

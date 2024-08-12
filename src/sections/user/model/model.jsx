@@ -55,10 +55,41 @@ function CustomeModel({
                                 />
                             </Stack>
                             <Stack direction="column" spacing={5}>
-                                {addImage &&
+                                {addImage && !isChange &&
                                     <>
                                         <Box>
                                             {data.image && <img
+                                                src={URL.createObjectURL(data.image)}
+                                                width="250px"
+                                                height="250px"
+                                            />}
+                                        </Box>
+                                        <Box>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImage}
+                                                style={{ display: "none" }}
+                                                id="image-file-input"
+                                                name='img'
+                                            />
+                                            <label htmlFor="image-file-input">
+                                                <Button variant="outlined" component="span">
+                                                    Select Image
+                                                </Button>
+                                            </label>
+                                        </Box>
+                                    </>
+                                }
+                                {isChange && addImage &&
+                                    <>
+                                        <Box>
+                                            {typeof data.image === "string" && data.image && <img
+                                                src={data.image}
+                                                width="250px"
+                                                height="250px"
+                                            />}
+                                            {typeof data.image !== "string" && data.image && <img
                                                 src={URL.createObjectURL(data.image)}
                                                 width="250px"
                                                 height="250px"

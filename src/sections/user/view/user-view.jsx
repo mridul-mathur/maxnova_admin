@@ -156,10 +156,6 @@ export default function UserPage() {
     const file = event.target.files[0];
 
     if (!file) {
-      setNewCompany((prev) => ({
-        ...prev,
-        image: file
-      }))
       return;
     }
 
@@ -168,9 +164,6 @@ export default function UserPage() {
       image: file
     }));
   };
-
-  console.log(categoryData)
-
 
   const handleAddCompany = () => {
     const data = new FormData();
@@ -244,6 +237,7 @@ export default function UserPage() {
                         id={row._id}
                         name={row.name}
                         descripiton={row.description}
+                        image={row.image}
                         isCompany={true}
                       />
                     ))}

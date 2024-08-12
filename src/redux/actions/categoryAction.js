@@ -1,17 +1,16 @@
 import axios from '../../../axios'
 
-
 export const CATEGORY = 'CATEGORY'
 export const ADDCATEGORY = 'ADDCATEGORY'
 export const DELETECATEGORY = 'DELETECATEGORY'
-
+export const UPDATECATEGORY = 'UPDATECATEGORY'
 
 export function getAllCategory() {
     return (dispatch) => {
         axios.get('api/category').then((res) => {
             dispatch({
                 type: CATEGORY,
-                payload: res.data.allCategory
+                payload: res.data
             })
         }).catch((error) => {
             console.log(error.response.data.errors[0].msg)
@@ -48,6 +47,23 @@ export function deleteCategory(id){
             }).catch((error) => {
                 console.log(error.response.data.errors[0].msg)
             })
+        })
+    }
+}
+
+export function updateCategory(id, data){
+    return (dispatch) => {
+        axios.patch(`api/category/${id}`, {
+            name: data.name,
+            description: data.description
+        }).then((res) => {
+            dispatch(getAllCategory())
+            dispatch({
+                type: UPDATECATEGORY,
+                payload: res.data
+            })
+        }).catch((error) => {
+            console.log(error.response.data.errors[0].msg)
         })
     }
 }
