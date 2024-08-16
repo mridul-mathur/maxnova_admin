@@ -1,24 +1,24 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
-import Popover from '@mui/material/Popover';
-import { alpha } from '@mui/material/styles';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import { Box } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
+import Popover from "@mui/material/Popover";
+import { alpha } from "@mui/material/styles";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
-import { account } from 'src/_mock/account';
-import useAuth from '../../../context/useAuth';
+import { account } from "src/_mock/account";
+import useAuth from "../../../context/useAuth";
 
 // ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-  }
+    label: "Profile",
+    icon: "eva:person-fill",
+  },
 ];
 
 // ----------------------------------------------------------------------
@@ -34,13 +34,13 @@ export default function AccountPopover() {
   };
 
   const handleClose = () => {
-    setOpen(false)
+    setOpen(false);
   };
 
   const handleLogout = () => {
-    logout()
-    handleClose()
-  }
+    logout();
+    handleClose();
+  };
 
   return (
     <>
@@ -73,8 +73,8 @@ export default function AccountPopover() {
         open={!!open}
         anchorEl={open}
         onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
           sx: {
             p: 0,
@@ -90,21 +90,19 @@ export default function AccountPopover() {
           </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+        <Divider sx={{ borderStyle: "dashed" }} />
 
         {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label}>
-            {option.label}
-          </MenuItem>
+          <MenuItem key={option.label}>{option.label}</MenuItem>
         ))}
 
-        <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
+        <Divider sx={{ borderStyle: "dashed", m: 0 }} />
 
         <MenuItem
           disableRipple
           disableTouchRipple
           onClick={handleLogout}
-          sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
+          sx={{ typography: "body2", color: "error.main", py: 1.5 }}
         >
           Logout
         </MenuItem>

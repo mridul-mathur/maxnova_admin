@@ -1,93 +1,104 @@
-import { useState, forwardRef, useEffect } from 'react';
+import { useState, forwardRef, useEffect } from "react";
 
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { Modal as BaseModal } from '@mui/base/Modal';
-import { styled, css } from '@mui/system';
-import Fade from '@mui/material/Fade';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { Button, FormControl, InputLabel, TextField, FormControlLabel, Checkbox } from '@mui/material';
+import { Box } from "@mui/material";
+import Link from "@mui/material/Link";
+import Card from "@mui/material/Card";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { Modal as BaseModal } from "@mui/base/Modal";
+import { styled, css } from "@mui/system";
+import Fade from "@mui/material/Fade";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 
 // ----------------------------------------------------------------------
 
-
-export default function ShopProductCard({ product, company, category, handleDelete = (id) => { }, handleEdit = (id, productDetails) => { } }) {
+export default function ShopProductCard({
+  product,
+  company,
+  category,
+  handleDelete = (id) => {},
+  handleEdit = (id, productDetails) => {},
+}) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
-    setUpdateState(product)
+    setUpdateState(product);
     setOpen(false);
-  }
-
-  const getCompany = company
-  const getCategory = category
-
-  const [updateState, setUpdateState] = useState(product)
-
-  const handleTopProduct = (event) => {
-    const { checked } = event.target
-    setUpdateState((prev) => ({
-      ...prev,
-      is_top: checked
-    }))
   };
 
+  const getCompany = company;
+  const getCategory = category;
+
+  const [updateState, setUpdateState] = useState(product);
+
+  const handleTopProduct = (event) => {
+    const { checked } = event.target;
+    setUpdateState((prev) => ({
+      ...prev,
+      is_top: checked,
+    }));
+  };
 
   const handleChangeProduct = (event) => {
-    const { value } = event.target
+    const { value } = event.target;
     setUpdateState((prev) => ({
       ...prev,
-      name: value
-    }))
-  }
+      name: value,
+    }));
+  };
 
   const handleChangeUsp = (event) => {
-    const { value } = event.target
+    const { value } = event.target;
     setUpdateState((prev) => ({
       ...prev,
-      usp: value
-    }))
-  }
+      usp: value,
+    }));
+  };
 
   const handleChangeIngredients = (event) => {
-    const { value } = event.target
+    const { value } = event.target;
     setUpdateState((prev) => ({
       ...prev,
-      ingredients: value
-    }))
-  }
+      ingredients: value,
+    }));
+  };
 
   const handleChangeCompany = (event) => {
-    const { value } = event.target
+    const { value } = event.target;
     setUpdateState((prev) => ({
       ...prev,
-      company_id: value
-    }))
+      company_id: value,
+    }));
   };
 
   const handleChangeCategory = (event) => {
-    const { value } = event.target
+    const { value } = event.target;
     setUpdateState((prev) => ({
       ...prev,
-      category_id: value
-    }))
+      category_id: value,
+    }));
   };
 
   const onDelete = () => {
-    handleDelete(product._id)
-    handleClose()
-  }
+    handleDelete(product._id);
+    handleClose();
+  };
 
   const onEdit = () => {
-    handleEdit(product._id, updateState)
-    handleClose()
-  }
+    handleEdit(product._id, updateState);
+    handleClose();
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -98,11 +109,9 @@ export default function ShopProductCard({ product, company, category, handleDele
 
     setUpdateState((prev) => ({
       ...prev,
-      image: file
+      image: file,
     }));
   };
-
-
 
   const renderImg = (
     <Box
@@ -113,17 +122,15 @@ export default function ShopProductCard({ product, company, category, handleDele
         top: 0,
         width: 1,
         height: 1,
-        objectFit: 'cover',
-        position: 'absolute',
+        objectFit: "cover",
+        position: "absolute",
       }}
     />
   );
 
   return (
     <Card>
-      <Box sx={{ pt: '100%', position: 'relative' }}>
-        {renderImg}
-      </Box>
+      <Box sx={{ pt: "100%", position: "relative" }}>{renderImg}</Box>
 
       <Modal
         aria-labelledby="transition-modal-title"
@@ -142,28 +149,32 @@ export default function ShopProductCard({ product, company, category, handleDele
                   value={updateState.name}
                   label="Product Name"
                   sx={{
-                    width: '350px',
+                    width: "350px",
                   }}
                   onChange={handleChangeProduct}
                 />
-                <FormControl >
+                <FormControl>
                   <InputLabel id="demo-simple-select-label">Company</InputLabel>
                   <Select
                     value={updateState.company_id}
                     label="Company"
                     onChange={handleChangeCompany}
                   >
-                    {getCompany && getCompany.length > 0 ?
+                    {getCompany && getCompany.length > 0 ? (
                       getCompany?.map((data) => (
-                        <MenuItem name="company_id" value={data._id}>{data.name}</MenuItem>
+                        <MenuItem name="company_id" value={data._id}>
+                          {data.name}
+                        </MenuItem>
                       ))
-                      :
+                    ) : (
                       <MenuItem value="">none</MenuItem>
-                    }
+                    )}
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                  <InputLabel id="demo-simple-select-label">
+                    Category
+                  </InputLabel>
                   <Select
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
@@ -171,13 +182,15 @@ export default function ShopProductCard({ product, company, category, handleDele
                     label="Category"
                     onChange={handleChangeCategory}
                   >
-                    {getCategory && getCategory.length > 0 ?
+                    {getCategory && getCategory.length > 0 ? (
                       getCategory?.map((data) => (
-                        <MenuItem name="company_id" value={data._id}>{data.name}</MenuItem>
+                        <MenuItem name="company_id" value={data._id}>
+                          {data.name}
+                        </MenuItem>
                       ))
-                      :
+                    ) : (
                       <MenuItem value="">none</MenuItem>
-                    }
+                    )}
                   </Select>
                 </FormControl>
                 <TextField
@@ -185,7 +198,7 @@ export default function ShopProductCard({ product, company, category, handleDele
                   value={updateState.usp}
                   label="USP"
                   sx={{
-                    width: '350px',
+                    width: "350px",
                   }}
                   multiline
                   onChange={handleChangeUsp}
@@ -195,7 +208,7 @@ export default function ShopProductCard({ product, company, category, handleDele
                   value={updateState.ingredients}
                   label="Ingredients"
                   sx={{
-                    width: '350px',
+                    width: "350px",
                   }}
                   multiline
                   onChange={handleChangeIngredients}
@@ -212,16 +225,22 @@ export default function ShopProductCard({ product, company, category, handleDele
               </Stack>
               <Stack direction="column" spacing={5}>
                 <Box>
-                  {typeof updateState.image === "string" && updateState.image && <img
-                    src={updateState.image}
-                    width="250px"
-                    height="250px"
-                  />}
-                  {typeof updateState.image !== "string" && updateState.image && <img
-                    src={URL.createObjectURL(updateState.image)}
-                    width="250px"
-                    height="250px"
-                  />}
+                  {typeof updateState.image === "string" &&
+                    updateState.image && (
+                      <img
+                        src={updateState.image}
+                        width="250px"
+                        height="250px"
+                      />
+                    )}
+                  {typeof updateState.image !== "string" &&
+                    updateState.image && (
+                      <img
+                        src={URL.createObjectURL(updateState.image)}
+                        width="250px"
+                        height="250px"
+                      />
+                    )}
                 </Box>
                 <Box>
                   <input
@@ -230,7 +249,7 @@ export default function ShopProductCard({ product, company, category, handleDele
                     onChange={handleFileChange}
                     style={{ display: "none" }}
                     id="image-file-input"
-                    name='img'
+                    name="img"
                   />
                   <label htmlFor="image-file-input">
                     <Button variant="outlined" component="span">
@@ -239,10 +258,8 @@ export default function ShopProductCard({ product, company, category, handleDele
                   </label>
                 </Box>
                 <Box>
-                  <Button onClick={onEdit}>
-                    Edit
-                  </Button>
-                  <Button color='error' onClick={onDelete}>
+                  <Button onClick={onEdit}>Edit</Button>
+                  <Button color="error" onClick={onDelete}>
                     Delete
                   </Button>
                 </Box>
@@ -254,7 +271,12 @@ export default function ShopProductCard({ product, company, category, handleDele
 
       <Stack spacing={2} sx={{ p: 3 }}>
         <a onClick={handleOpen}>
-          <Link color="inherit" underline="hover" sx={{ fontWeight: 'bold' }} noWrap>
+          <Link
+            color="inherit"
+            underline="hover"
+            sx={{ fontWeight: "bold" }}
+            noWrap
+          >
             {product.name}
           </Link>
         </a>
@@ -264,7 +286,6 @@ export default function ShopProductCard({ product, company, category, handleDele
         <Typography variant="subtitle2">
           Category name : {product.category_name}
         </Typography>
-
       </Stack>
     </Card>
   );
@@ -275,7 +296,7 @@ ShopProductCard.propTypes = {
   company: PropTypes.array,
   category: PropTypes.array,
   handleDelete: PropTypes.func,
-  handleEdit: PropTypes.func
+  handleEdit: PropTypes.func,
 };
 
 const Backdrop = forwardRef((props, ref) => {
@@ -292,25 +313,25 @@ Backdrop.propTypes = {
 };
 
 const blue = {
-  200: '#99CCFF',
-  300: '#66B2FF',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  700: '#0066CC',
+  200: "#99CCFF",
+  300: "#66B2FF",
+  400: "#3399FF",
+  500: "#007FFF",
+  600: "#0072E5",
+  700: "#0066CC",
 };
 
 const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
+  50: "#F3F6F9",
+  100: "#E5EAF2",
+  200: "#DAE2ED",
+  300: "#C7D0DD",
+  400: "#B0B8C4",
+  500: "#9DA8B7",
+  600: "#6B7A90",
+  700: "#434D5B",
+  800: "#303740",
+  900: "#1C2025",
 };
 
 const Modal = styled(BaseModal)`
@@ -331,28 +352,28 @@ const StyledBackdrop = styled(Backdrop)`
 `;
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '50vw',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "50vw",
 };
 
-const ModalContent = styled('div')(
+const ModalContent = styled("div")(
   ({ theme }) => css`
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: "IBM Plex Sans", sans-serif;
     font-weight: 500;
     text-align: start;
     position: relative;
     gap: 8px;
     overflow: hidden;
-    background-color: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+    background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
     border-radius: 8px;
-    border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
+    border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
     box-shadow: 0 4px 12px
-      ${theme.palette.mode === 'dark' ? 'rgb(0 0 0 / 0.5)' : 'rgb(0 0 0 / 0.2)'};
+      ${theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"};
     padding: 40px;
-    color: ${theme.palette.mode === 'dark' ? grey[50] : grey[900]};
+    color: ${theme.palette.mode === "dark" ? grey[50] : grey[900]};
 
     & .modal-title {
       margin: 0;
@@ -364,10 +385,10 @@ const ModalContent = styled('div')(
       margin: 0;
       line-height: 1.5rem;
       font-weight: 400;
-      color: ${theme.palette.mode === 'dark' ? grey[400] : grey[800]};
+      color: ${theme.palette.mode === "dark" ? grey[400] : grey[800]};
       margin-bottom: 4px;
     }
-  `,
+  `
 );
 
 // const TriggerButton = styled(Button)(

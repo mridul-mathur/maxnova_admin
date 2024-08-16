@@ -1,23 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { alpha, useTheme } from '@mui/material/styles';
-import InputAdornment from '@mui/material/InputAdornment';
+import { Box } from "@mui/material";
+import Link from "@mui/material/Link";
+import Card from "@mui/material/Card";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { alpha, useTheme } from "@mui/material/styles";
+import InputAdornment from "@mui/material/InputAdornment";
 
-import { useRouter } from 'src/routes/hooks';
+import { useRouter } from "src/routes/hooks";
 
-import { bgGradient } from 'src/theme/css';
+import { bgGradient } from "src/theme/css";
 
-import Logo from 'src/components/logo';
-import Iconify from 'src/components/iconify';
-import useAuth from '../../context/useAuth';
+import Logo from "src/components/logo";
+import Iconify from "src/components/iconify";
+import useAuth from "../../context/useAuth";
 
 // ----------------------------------------------------------------------
 
@@ -31,24 +31,24 @@ export default function LoginView() {
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({
     username: "",
-    password: ""
-  })
+    password: "",
+  });
 
   const handleChange = (e) => {
     setUserInfo({
       ...userInfo,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/dashboard')
+      router.replace("/dashboard");
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated]);
 
   const handleClick = () => {
-    login(userInfo.username, userInfo.password)
+    login(userInfo.username, userInfo.password);
   };
 
   const renderForm = (
@@ -66,12 +66,17 @@ export default function LoginView() {
           label="Password"
           value={userInfo.password}
           onChange={handleChange}
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  <Iconify
+                    icon={showPassword ? "eva:eye-fill" : "eva:eye-off-fill"}
+                  />
                 </IconButton>
               </InputAdornment>
             ),
@@ -79,7 +84,12 @@ export default function LoginView() {
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="flex-end"
+        sx={{ my: 3 }}
+      >
         <Link variant="subtitle2" underline="hover">
           Forgot password?
         </Link>
@@ -103,14 +113,14 @@ export default function LoginView() {
       sx={{
         ...bgGradient({
           color: alpha(theme.palette.background.default, 0.9),
-          imgUrl: '/assets/background/overlay_4.jpg',
+          imgUrl: "/assets/background/overlay_4.jpg",
         }),
         height: 1,
       }}
     >
       <Logo
         sx={{
-          position: 'fixed',
+          position: "fixed",
           top: { xs: 16, md: 24 },
           left: { xs: 16, md: 24 },
         }}
@@ -124,7 +134,9 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4" sx={{ pb: 5 }}>Sign in to MaxNova</Typography>
+          <Typography variant="h4" sx={{ pb: 5 }}>
+            Sign in to MaxNova
+          </Typography>
 
           {renderForm}
         </Card>

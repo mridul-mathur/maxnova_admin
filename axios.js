@@ -5,20 +5,22 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
 } else {
   axios.defaults.baseURL = "http://127.0.0.1:8000/";
 }
-axios.defaults.baseURL = "http://127.0.0.1:5000/";
+axios.defaults.baseURL = "http://127.0.0.1:4000/";
 
-axios.interceptors.response.use(function (response) {
-  return response;
-}, function (error) {
-  if (error.response.status === 401) {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('username')
-    delete axios.defaults.headers.common.Authorization
-    window.location.reload();
+axios.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    if (error.response.status === 401) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("username");
+      delete axios.defaults.headers.common.Authorization;
+      window.location.reload();
+    }
+    return Promise.reject(error);
   }
-  return Promise.reject(error);
-});
-
+);
 
 axios.defaults.withCredentials = true;
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";

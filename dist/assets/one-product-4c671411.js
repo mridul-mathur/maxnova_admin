@@ -1,0 +1,1 @@
+import{b3 as t,r as s,j as r,W as n}from"./index-0fcb10ac.js";function o(){const{id:e}=t();return s.useEffect(()=>{console.log(e)},[]),r.jsx("div",{children:"ibfwonw;fe"})}function i(){return r.jsxs(r.Fragment,{children:[r.jsx(n,{children:r.jsx("title",{children:" Product "})}),r.jsx(o,{})]})}export{i as default};
