@@ -3,26 +3,44 @@ import React, { useState, useCallback } from "react";
 
 import List from "@mui/material/List";
 import Collapse from "@mui/material/Collapse";
-import ImageList from "@mui/material/ImageList";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import ListItemText from "@mui/material/ListItemText";
-import ImageListItem from "@mui/material/ImageListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import EditModel from "./editmodal";
+import EditModal from "./editmodal";
 
 const capitalizeFirstLetter = (string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
 export default function EditContent() {
-  const pages = [
+  const [pages, setPages] = useState([
     { name: "home", data: home },
     { name: "about", data: about },
+    { name: "PCD Franchise", data: pcdfran },
     { name: "Private Label", data: pvtlabel },
     { name: "Custom Formulation", data: customform },
-  ];
+  ]);
+
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleSave = (updatedData) => {
+    setPages((prevPages) =>
+      prevPages.map((page) =>
+        page.name === selectedPage.name ? { ...page, data: updatedData } : page
+      )
+    );
+    setModalOpen(false);
+  };
+
+  const handleEditClick = (page) => {
+    setSelectedPage(page);
+    setModalOpen(true);
+  };
 
   return (
     <div>
@@ -41,34 +59,51 @@ export default function EditContent() {
         <Typography variant="h6" sx={{ my: 1 }}>
           Pages
         </Typography>
-        {pages.map(({ name, data }) => (
-          <PageTable key={name} pageName={name} pageData={data} />
+        {pages.map((page) => (
+          <PageTable
+            key={page.name}
+            page={page}
+            onEditClick={handleEditClick}
+          />
         ))}
       </List>
+
+      {selectedPage && (
+        <EditModal
+          content={selectedPage.data}
+          onSave={handleSave}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
 
-function PageTable({ pageName, pageData }) {
+function PageTable({ page, onEditClick }) {
   const [open, setOpen] = useState(true);
   const handleClick = useCallback(() => setOpen((prev) => !prev), []);
 
   return (
     <>
       <ListItemButton onClick={handleClick} sx={{ background: "#fff" }}>
-        <ListItemText primary={`${capitalizeFirstLetter(pageName)} Page`} />
+        <ListItemText primary={`${capitalizeFirstLetter(page.name)} Page`} />
+        <IconButton
+          onClick={() => onEditClick(page)}
+          sx={{ mx: 2, fontSize: "medium", gap: 1 }}
+        >
+          <EditIcon sx={{ fontSize: "medium" }} />
+          Edit
+        </IconButton>
         {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit sx={{ px: 2 }}>
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          Sections
-        </Typography>
         <List component="div" disablePadding sx={{ px: 2 }}>
-          {Object.keys(pageData).map((sectionKey) => (
+          {Object.keys(page.data).map((sectionKey) => (
             <SectionItem
               key={sectionKey}
               sectionName={sectionKey}
-              sectionData={pageData[sectionKey]}
+              sectionData={page.data[sectionKey]}
             />
           ))}
         </List>
@@ -82,66 +117,53 @@ function SectionItem({ sectionName, sectionData }) {
   const handleClick = useCallback(() => setOpen((prev) => !prev), []);
 
   const renderSectionContent = (data) => {
-    if (Array.isArray(data)) {
+    if (typeof data === "string") {
+      if (data.match(/\.(jpg|jpeg|png)$/i)) {
+        return <ImageItem src={data} alt={sectionName} />;
+      }
+      return data;
+    }
+
+    if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
       return (
-        <ImageList
-          sx={{ width: "100%", height: "auto" }}
-          cols={3}
-          rowHeight={164}
-        >
-          {data.map((item, index) => (
-            <ImageListItem key={index}>
-              <img
-                src={item.image}
-                alt={item.image_alt}
-                loading="lazy"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-              {item.text && (
-                <ListItemText primary={item.text} sx={{ fontWeight: "bold" }} />
-              )}
-            </ImageListItem>
-          ))}
-        </ImageList>
+        <>
+          <ListItemButton onClick={handleClick} sx={{ background: "#f0f0f0" }}>
+            <ListItemText
+              primary={<strong>{capitalizeFirstLetter(sectionName)}:</strong>}
+            />
+            {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItemButton>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding sx={{ px: 2 }}>
+              {Array.isArray(data)
+                ? data.map((item, index) => (
+                    <SectionItem
+                      key={index}
+                      sectionName={`${sectionName} [${index}]`}
+                      sectionData={item}
+                    />
+                  ))
+                : Object.keys(data).map((key) => (
+                    <SectionItem
+                      key={key}
+                      sectionName={key}
+                      sectionData={data[key]}
+                    />
+                  ))}
+            </List>
+          </Collapse>
+        </>
       );
     }
 
-    if (typeof data === "object" && data !== null) {
-      return Object.keys(data).map((key, index) => (
-        <List key={index}>
-          {typeof data[key] === "object" ? (
-            <SectionItem sectionName={key} sectionData={data[key]} />
-          ) : (
-            <>
-              {key === "image" ? (
-                <ImageItem src={data[key]} alt={data.image_alt} />
-              ) : (
-                <ListItemText
-                  primary={`${capitalizeFirstLetter(key)}: ${data[key]}`}
-                />
-              )}
-            </>
-          )}
-        </List>
-      ));
-    }
-
-    return <ListItemText primary={data} />;
+    return null;
   };
 
   return (
-    <>
-      <ListItemButton onClick={handleClick}>
-        <ListItemText primary={capitalizeFirstLetter(sectionName)} />
-        <EditModel content={sectionData} />
-        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding sx={{ px: 6, py: 0 }}>
-          {renderSectionContent(sectionData)}
-        </List>
-      </Collapse>
-    </>
+    <ListItemText>
+      <strong>{capitalizeFirstLetter(sectionName)}:</strong>{" "}
+      {renderSectionContent(sectionData)}
+    </ListItemText>
   );
 }
 
@@ -156,8 +178,8 @@ function ImageItem({ src, alt }) {
 }
 
 PageTable.propTypes = {
-  pageName: PropTypes.string.isRequired,
-  pageData: PropTypes.object.isRequired,
+  page: PropTypes.object.isRequired,
+  onEditClick: PropTypes.func.isRequired,
 };
 
 SectionItem.propTypes = {
@@ -171,184 +193,95 @@ ImageItem.propTypes = {
 };
 
 const home = {
-  hero: {
-    head: "WE ARE LEADING\nCOSMETIC MANUFACTURER",
-    splineurl: "https://example.com/3d-model",
-  },
-  about: {
-    subhead:
-      "All the credits goes to each person working in the backend day and night for us.",
-    text: "Maxnova group of companies is committed to delivering happiness in the form of ’good health’ in everyone’s home.",
-    image: "../../../../public/assets/images/covers/cover_6.jpg",
-    image_alt: "An image showing a happy family",
-  },
-  whyus: {
-    head: "Extensive range\nof products",
-    text1: "Hassle-free product\nmanufacturing and delivery",
-    image1: {
-      text: "Short product development cycle & Brand-specific products with Specialised consultation",
-      image: "../../../../public/assets/images/covers/cover_7.jpg",
-      image_alt: "An image of our top product",
-    },
-    image2: {
-      text: "Short product development cycle with Specialised consultation",
-      image: "../../../../public/assets/images/covers/cover_8.jpg",
-      image_alt: "An image of our second top product",
-    },
-    whylist: {
-      text: "Unique Products Variety Of Products High Quality Cost-effective Timely Delivery Personalized Products",
-    },
-
-    text2: "Value driven and quality conscious!",
-  },
+  head_hero: "Welcome to Our Platform",
+  spline_hero: "Your success is our priority.",
+  subhead_about: "About Us",
+  text_about:
+    "We are dedicated to delivering high-quality services to our clients.",
+  image_about: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_about: "Team working together",
+  head_whyus: "Why Choose Us",
+  text1_whyus: "We provide exceptional services tailored to your needs.",
+  whylist_whyus: "Expert team, 24/7 support, Proven results",
+  text2_whyus: "Our commitment to excellence sets us apart.",
+  text_1_whyus: "High-quality service",
+  image_1_whyus: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_1_whyus: "Quality service illustration",
+  text_2_whyus: "Reliable and efficient solutions",
+  image_2_whyus: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_2_whyus: "Efficient solutions illustration",
 };
 
 const about = {
-  hero: {
-    subhead:
-      "All the credits goes to each person working in the backend day and night for us.",
-    images: [
-      {
-        image: "../../../../public/assets/images/covers/cover_9.jpg",
-        image_alt: "Our team",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-      {
-        image: "../../../../public/assets/images/covers/cover_10.jpg",
-        image_alt: "Company building",
-      },
-    ],
-  },
-  about: {
-    subhead:
-      "All the credits goes to each person working in the backend day and night for us.",
-    text: "Maxnova group of companies is committed to delivering happiness in the form of ’good health’ in everyone’s home.",
-    image: "../../../../public/assets/images/covers/cover_11.jpg",
-    image_alt: "Our mission",
-  },
+  subhead_hero: "Welcome to Our Service",
+  image: [
+    "../../../../public/assets/images/covers/cover_2.jpg",
+    "../../../../public/assets/images/covers/cover_2.jpg",
+  ],
+  subhead_about: "About Us",
+  text_about:
+    "We are committed to providing the best service to our customers.",
+  image_about: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_about: "Our Team at Work",
   certificates: [
     {
-      text: "ISO Certified",
-      image: "../../../../public/assets/images/covers/cover_12.jpg",
-      image_alt: "ISO Certification",
+      text: "Certified Excellence",
+      image: "../../../../public/assets/images/covers/cover_2.jpg",
+      image_alt: "Certificate of Excellence",
     },
     {
-      text: "Best Business Award",
-      image: "../../../../public/assets/images/covers/cover_13.jpg",
-      image_alt: "Best Business Award",
+      text: "Industry Standard",
+      image: "../../../../public/assets/images/covers/cover_2.jpg",
+      image_alt: "Standard Certification",
     },
   ],
 };
 
 const pvtlabel = {
-  hero: {
-    head: "Custom Formulation Services",
-    image: "../../../../public/assets/images/covers/cover_14.jpg",
-    image_alt: "Lab equipment for custom formulation",
-  },
-  description:
-    "Our custom formulation services are tailored to meet your specific needs, ensuring high-quality and innovative products.",
+  head_pvt: "Private Solutions Tailored for You",
+  image_pvt: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_pvt: "Private solution illustration",
+  text_pvt:
+    "We specialize in creating private solutions that meet your specific requirements.",
   steps: [
     {
-      head: "Step 1: Consultation",
-      description:
-        "We begin with a thorough consultation to understand your requirements and product goals.",
+      head: "Step 1: Initial Consultation",
+      text: "We begin by discussing your unique needs in detail.",
     },
     {
-      head: "Step 2: Research & Development",
-      description:
-        "Our team conducts extensive research and development to create a formulation that meets your specifications.",
+      head: "Step 2: Customized Planning",
+      text: "Our experts develop a tailored plan to address your needs.",
     },
     {
-      head: "Step 3: Testing & Validation",
-      description:
-        "The formulation undergoes rigorous testing and validation to ensure it meets quality standards.",
-    },
-    {
-      head: "Step 4: Production",
-      description:
-        "Once validated, the formulation is scaled up for production, ensuring consistency and quality.",
-    },
-    {
-      head: "Step 5: Packaging & Delivery",
-      description:
-        "We offer custom packaging options and ensure timely delivery of the final product.",
+      head: "Step 3: Execution and Support",
+      text: "We implement the solution with ongoing support to ensure success.",
     },
   ],
 };
 
 const customform = {
-  hero: {
-    head: "Custom Formulation Services",
-    image: "../../../../public/assets/images/covers/cover_15.jpg",
-    image_alt: "Lab equipment for custom formulation",
-  },
-  description:
-    "Our custom formulation services are tailored to meet your specific needs, ensuring high-quality and innovative products.",
+  head_custom: "Custom Solutions for You",
+  image_custom: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_custom: "Custom solution illustration",
+  text_custom: "We offer tailored solutions to meet your unique needs.",
   steps: [
     {
-      head: "Step 1: Consultation",
-      description:
-        "We begin with a thorough consultation to understand your requirements and product goals.",
+      head: "Step 1: Understanding Your Requirements",
+      text: "We begin by thoroughly understanding your specific needs and challenges.",
     },
     {
-      head: "Step 2: Research & Development",
-      description:
-        "Our team conducts extensive research and development to create a formulation that meets your specifications.",
+      head: "Step 2: Developing a Strategy",
+      text: "Our team creates a customized strategy that aligns with your goals.",
     },
     {
-      head: "Step 3: Testing & Validation",
-      description:
-        "The formulation undergoes rigorous testing and validation to ensure it meets quality standards.",
-    },
-    {
-      head: "Step 4: Production",
-      description:
-        "Once validated, the formulation is scaled up for production, ensuring consistency and quality.",
-    },
-    {
-      head: "Step 5: Packaging & Delivery",
-      description:
-        "We offer custom packaging options and ensure timely delivery of the final product.",
+      head: "Step 3: Implementation",
+      text: "We implement the strategy with precision and focus on delivering results.",
     },
   ],
+};
+
+const pcdfran = {
+  head_pcd: "PCD Solutions Tailored for You",
+  image_pcd: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_pcd: "PCD solution illustration",
 };

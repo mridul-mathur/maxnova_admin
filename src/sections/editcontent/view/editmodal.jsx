@@ -1,72 +1,72 @@
 import clsx from "clsx";
-import * as React from "react";
 import PropTypes from "prop-types";
+import React, { useState } from "react";
 
 import { styled } from "@mui/system";
 import { Modal as BaseModal } from "@mui/base/Modal";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { Box, Button, TextField, Typography } from "@mui/material";
 
-export default function EditModel({ content, onSave }) {
-  const [open, setOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(content);
-  const [imagePreview, setImagePreview] = React.useState(content.image || "");
+function ImageInput({ value }) {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Typography variant="body1">Upload Image</Typography>
+      {value && <img src={value} alt="Preview" style={{ maxWidth: "100%" }} />}
+      <input type="file" accept="image/*" />
+    </Box>
+  );
+}
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
+ImageInput.propTypes = {
+  value: PropTypes.string,
+};
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+function TextFieldInput({ value }) {
+  return <TextField value={value} fullWidth margin="normal" />;
+}
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+TextFieldInput.propTypes = {
+  value: PropTypes.string,
+};
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const newFormData = new FormData();
-      newFormData.append("file", file);
-      newFormData.append("upload_preset", "your_upload_preset");
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
-        {
-          method: "POST",
-          body: newFormData,
-        }
-      );
-
-      const data = await response.json();
-      const imageUrl = data.secure_url;
-
-      setFormData((prevData) => ({
-        ...prevData,
-        image: imageUrl,
-      }));
-      setImagePreview(imageUrl);
+function renderInputField(data, handleOpenNestedModal) {
+  if (typeof data === "string") {
+    if (
+      data.includes(".jpg") ||
+      data.includes(".png") ||
+      data.includes(".jpeg")
+    ) {
+      return <ImageInput value={data} />;
     }
-  };
+    return <TextFieldInput value={data} />;
+  }
 
-  const handleSave = () => {
-    onSave(formData);
-    handleClose();
-  };
+  if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
+    return (
+      <>
+        <Typography>{JSON.stringify(data)}</Typography>
+        <Button onClick={handleOpenNestedModal}>Open Nested Modal</Button>
+      </>
+    );
+  }
 
-  const isPrimitive = (value) => value !== Object(value);
+  return null;
+}
+
+export default function EditModal({ content, open, onClose }) {
+  const [nestedModalOpen, setNestedModalOpen] = useState(false);
+  const [nestedContent, setNestedContent] = useState(null);
+
+  const handleOpenNestedModal = (key) => {
+    setNestedContent(content[key]);
+    setNestedModalOpen(true);
+  };
 
   return (
     <div>
-      <button
-        onClick={handleOpen}
-        type="button"
-        style={{
+      <Button
+        onClick={() => {}}
+        sx={{
           background: "none",
           cursor: "pointer",
           display: "flex",
@@ -80,62 +80,47 @@ export default function EditModel({ content, onSave }) {
       >
         <EditNoteIcon sx={{ p: 0, m: 0, width: 20 }} />
         Edit
-      </button>
+      </Button>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={onClose}
         aria-labelledby="edit-modal-title"
         aria-describedby="edit-modal-description"
         slots={{ backdrop: StyledBackdrop }}
         sx={{ width: "100vw" }}
       >
-        <ModalContent sx={{ width: "50%" }}>
+        <ModalContent
+          sx={{ width: "50%", maxHeight: "75vh", overflowY: "auto" }}
+        >
           <Typography variant="h6" id="edit-modal-title">
             Edit Content
           </Typography>
-          {Object.keys(formData)
-            .filter((key) => isPrimitive(formData[key]) && key !== "image")
-            .map((key) => (
-              <TextField
-                key={key}
-                name={key}
-                label={capitalizeFirstLetter(key)}
-                value={formData[key]}
-                onChange={handleChange}
-                fullWidth
-                margin="normal"
-              />
-            ))}
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body1">Upload Image</Typography>
-            <input type="file" onChange={handleImageChange} />
-            {imagePreview && (
-              <Box sx={{ mt: 2 }}>
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  style={{ width: "100%", maxHeight: "200px" }}
-                />
-              </Box>
-            )}
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-            <Button onClick={handleClose} sx={{ mr: 1 }}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleSave}>
-              Save
-            </Button>
-          </Box>
+          {Object.keys(content).map((key) => (
+            <Box key={key} sx={{ mt: 2 }}>
+              <Typography variant="body1">
+                {capitalizeFirstLetter(key)}
+              </Typography>
+              {renderInputField(content[key], () => handleOpenNestedModal(key))}
+            </Box>
+          ))}
         </ModalContent>
       </Modal>
+
+      {nestedModalOpen && (
+        <EditModal
+          content={nestedContent}
+          open={nestedModalOpen}
+          onClose={() => setNestedModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
 
-EditModel.propTypes = {
+EditModal.propTypes = {
   content: PropTypes.object.isRequired,
-  onSave: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 const Backdrop = React.forwardRef((props, ref) => {
@@ -150,7 +135,7 @@ const Backdrop = React.forwardRef((props, ref) => {
 });
 
 Backdrop.propTypes = {
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string,
   open: PropTypes.bool,
 };
 
@@ -184,10 +169,9 @@ const ModalContent = styled("div")(
     background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
     border-radius: 8px;
     border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
-    box-shadow: 0 4px 12px
-      ${
-        theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"
-      };
+    box-shadow: 0 4px 12px ${
+      theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"
+    };
     padding: 24px;
     color: ${theme.palette.mode === "dark" ? grey[50] : grey[900]};
   `
