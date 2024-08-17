@@ -11,7 +11,13 @@ function ImageInput({ value }) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Typography variant="body1">Upload Image</Typography>
-      {value && <img src={value} alt="Preview" style={{ maxWidth: "100%" }} />}
+      {value && (
+        <img
+          src={value}
+          alt="Preview"
+          style={{ maxWidth: "250px", height: "auto" }}
+        />
+      )}
       <input type="file" accept="image/*" />
     </Box>
   );
@@ -22,7 +28,19 @@ ImageInput.propTypes = {
 };
 
 function TextFieldInput({ value }) {
-  return <TextField value={value} fullWidth margin="normal" />;
+  const [inputValue, setInputValue] = useState(value);
+  const valonChange = (e) => {
+    setInputValue(e.target.value);
+  };
+  return (
+    <TextField
+      placeholder={value}
+      value={inputValue}
+      onChange={valonChange}
+      fullWidth
+      margin="normal"
+    />
+  );
 }
 
 TextFieldInput.propTypes = {
@@ -44,8 +62,28 @@ function renderInputField(data, handleOpenNestedModal) {
   if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
     return (
       <>
-        <Typography>{JSON.stringify(data)}</Typography>
-        <Button onClick={handleOpenNestedModal}>Open Nested Modal</Button>
+        {data &&
+          data.length > 0 &&
+          typeof data[0] === "string" &&
+          data.map((item, index) => (
+            <Box key={index} sx={{ mt: 2 }}>
+              <img src={item} alt={index} />
+            </Box>
+          ))}
+        {data &&
+          data.length > 0 &&
+          typeof data[0] === "object" &&
+          Object.keys(data[0]).map((key) => (
+            <Box key={key} sx={{ mt: 2 }}>
+              <Typography variant="body1">
+                <strong>{capitalizeFirstLetter(key)}</strong>
+              </Typography>
+              {renderInputField(data[0][key], handleOpenNestedModal)}
+            </Box>
+          ))}
+        <Button variant="contained" onClick={handleOpenNestedModal}>
+          + Add
+        </Button>
       </>
     );
   }
@@ -98,11 +136,19 @@ export default function EditModal({ content, open, onClose }) {
           {Object.keys(content).map((key) => (
             <Box key={key} sx={{ mt: 2 }}>
               <Typography variant="body1">
-                {capitalizeFirstLetter(key)}
+                <strong>{capitalizeFirstLetter(key)}</strong>
               </Typography>
               {renderInputField(content[key], () => handleOpenNestedModal(key))}
             </Box>
           ))}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+            <Button onClick={onClose} sx={{ mr: 1 }}>
+              Cancel
+            </Button>
+            <Button onClick={onClose} variant="contained">
+              Save
+            </Button>
+          </Box>
         </ModalContent>
       </Modal>
 
