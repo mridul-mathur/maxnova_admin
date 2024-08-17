@@ -17,14 +17,19 @@ const capitalizeFirstLetter = (string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
 export default function EditContent() {
-  const [pages, setPages] = useState([
-    { name: "home", data: home },
-    { name: "about", data: about },
-    { name: "PCD Franchise", data: pcdfran },
-    { name: "Private Label", data: pvtlabel },
-    { name: "Custom Formulation", data: customform },
-  ]);
+  const [homeData, setHomeData] = useState(home)
+  const [aboutData, setAboutData] = useState(about)
+  const [pcdData, setPcdData] = useState(pcdfran)
+  const [pvtData, setPvtData] = useState(pvtlabel)
+  const [customData, setCustomData] = useState(customform)
 
+  const [pages, setPages] = useState([
+    { name: "home", data: homeData },
+    { name: "about", data: aboutData },
+    { name: "PCD Franchise", data: pcdData },
+    { name: "Private Label", data: pvtData },
+    { name: "Custom Formulation", data: customData },
+  ]);
   const [selectedPage, setSelectedPage] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -41,6 +46,16 @@ export default function EditContent() {
     setSelectedPage(page);
     setModalOpen(true);
   };
+
+  const onChange = (e) => {
+    const { value } = e.target
+    setHomeData((prev) => ({
+      ...prev,
+      [e.target.name]: value
+    }))
+  }
+
+  console.log(homeData)
 
   return (
     <div>
@@ -74,6 +89,7 @@ export default function EditContent() {
           onSave={handleSave}
           open={modalOpen}
           onClose={() => setModalOpen(false)}
+          handleChange={onChange}
         />
       )}
     </div>
@@ -137,19 +153,19 @@ function SectionItem({ sectionName, sectionData }) {
             <List component="div" disablePadding sx={{ px: 2 }}>
               {Array.isArray(data)
                 ? data.map((item, index) => (
-                    <SectionItem
-                      key={index}
-                      sectionName={`${sectionName} [${index}]`}
-                      sectionData={item}
-                    />
-                  ))
+                  <SectionItem
+                    key={index}
+                    sectionName={`${sectionName} [${index}]`}
+                    sectionData={item}
+                  />
+                ))
                 : Object.keys(data).map((key) => (
-                    <SectionItem
-                      key={key}
-                      sectionName={key}
-                      sectionData={data[key]}
-                    />
-                  ))}
+                  <SectionItem
+                    key={key}
+                    sectionName={key}
+                    sectionData={data[key]}
+                  />
+                ))}
             </List>
           </Collapse>
         </>

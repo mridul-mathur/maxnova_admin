@@ -27,18 +27,14 @@ ImageInput.propTypes = {
   value: PropTypes.string,
 };
 
-function TextFieldInput({ value }) {
-  const [inputValue, setInputValue] = useState(value);
-  const valonChange = (e) => {
-    setInputValue(e.target.value);
-  };
+function TextFieldInput({ value, handleChange, name }) {
   return (
     <TextField
-      placeholder={value}
-      value={inputValue}
-      onChange={valonChange}
+      value={value}
       fullWidth
       margin="normal"
+      name={name}
+      onChange={handleChange}
     />
   );
 }
@@ -47,7 +43,7 @@ TextFieldInput.propTypes = {
   value: PropTypes.string,
 };
 
-function renderInputField(data, handleOpenNestedModal) {
+function renderInputField(data, key, handleChange, handleOpenNestedModal) {
   if (typeof data === "string") {
     if (
       data.includes(".jpg") ||
@@ -56,7 +52,7 @@ function renderInputField(data, handleOpenNestedModal) {
     ) {
       return <ImageInput value={data} />;
     }
-    return <TextFieldInput value={data} />;
+    return <TextFieldInput value={data} name={key} handleChange={handleChange} />;
   }
 
   if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
@@ -73,15 +69,22 @@ function renderInputField(data, handleOpenNestedModal) {
         {data &&
           data.length > 0 &&
           typeof data[0] === "object" &&
-          Object.keys(data[0]).map((key) => (
-            <Box key={key} sx={{ mt: 2 }}>
-              <Typography variant="body1">
-                <strong>{capitalizeFirstLetter(key)}</strong>
-              </Typography>
-              {renderInputField(data[0][key], handleOpenNestedModal)}
+          data.map((item, index) => (
+            <Box key={index}>
+              {Object.keys(item).map((key) => (
+                <Box key={key} sx={{ mt: 2 }}>
+                  <Typography variant="body1">
+                    <strong>{capitalizeFirstLetter(key)}</strong>
+                  </Typography>
+                  {renderInputField(item[key], key, handleChange, () => handleOpenNestedModal())}
+                </Box>
+              ))}
+              <Button variant="contained" onClick={() => handleDelete(index)}>
+                Delete
+              </Button>
             </Box>
           ))}
-        <Button variant="contained" onClick={handleOpenNestedModal}>
+        <Button variant="contained" onClick={handleOpenNestedModal} sx={{ mt: 4 }}>
           + Add
         </Button>
       </>
@@ -91,7 +94,7 @@ function renderInputField(data, handleOpenNestedModal) {
   return null;
 }
 
-export default function EditModal({ content, open, onClose }) {
+export default function EditModal({ content, open, onClose, handleChange }) {
   const [nestedModalOpen, setNestedModalOpen] = useState(false);
   const [nestedContent, setNestedContent] = useState(null);
 
@@ -103,7 +106,7 @@ export default function EditModal({ content, open, onClose }) {
   return (
     <div>
       <Button
-        onClick={() => {}}
+        onClick={() => { }}
         sx={{
           background: "none",
           cursor: "pointer",
@@ -138,7 +141,7 @@ export default function EditModal({ content, open, onClose }) {
               <Typography variant="body1">
                 <strong>{capitalizeFirstLetter(key)}</strong>
               </Typography>
-              {renderInputField(content[key], () => handleOpenNestedModal(key))}
+              {renderInputField(content[key], key, handleChange, () => handleOpenNestedModal(key))}
             </Box>
           ))}
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
@@ -215,8 +218,7 @@ const ModalContent = styled("div")(
     background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
     border-radius: 8px;
     border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
-    box-shadow: 0 4px 12px ${
-      theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"
+    box-shadow: 0 4px 12px ${theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"
     };
     padding: 24px;
     color: ${theme.palette.mode === "dark" ? grey[50] : grey[900]};

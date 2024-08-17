@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { createContext, useReducer } from 'react'
 import axios from '../../axios'
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: 'LOGOUT' })
     }
 
-    useEffect(() => {
+    useMemo(() => {
         try {
             const accessToken = window.localStorage.getItem('accessToken')
             const username = window.localStorage.getItem('username')
