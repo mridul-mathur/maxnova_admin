@@ -4,10 +4,15 @@ import React, { useState } from "react";
 
 import { styled } from "@mui/system";
 import { Modal as BaseModal } from "@mui/base/Modal";
-import EditNoteIcon from "@mui/icons-material/EditNote";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  ImageListItem,
+} from "@mui/material";
 
-function ImageInput({ value }) {
+function ImageInput({ value, name, handleChange }) {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Typography variant="body1">Upload Image</Typography>
@@ -18,16 +23,18 @@ function ImageInput({ value }) {
           style={{ maxWidth: "250px", height: "auto" }}
         />
       )}
-      <input type="file" accept="image/*" />
+      <input type="file" accept="image/*" name={name} onChange={handleChange} />
     </Box>
   );
 }
 
 ImageInput.propTypes = {
   value: PropTypes.string,
+  name: PropTypes.string,
+  handleChange: PropTypes.func,
 };
 
-function TextFieldInput({ value, handleChange, name }) {
+function TextFieldInput({ value, name, handleChange }) {
   return (
     <TextField
       value={value}
@@ -41,26 +48,35 @@ function TextFieldInput({ value, handleChange, name }) {
 
 TextFieldInput.propTypes = {
   value: PropTypes.string,
+  name: PropTypes.string,
+  handleChange: PropTypes.func,
 };
 
-function renderInputField(data, key, handleChange, handleOpenNestedModal) {
+function renderInputField(data, key, handleChange, handleOpenAddModal) {
   if (typeof data === "string") {
     if (
       data.includes(".jpg") ||
       data.includes(".png") ||
       data.includes(".jpeg")
     ) {
-      return <ImageInput value={data} />;
+      return <ImageInput value={data} name={key} handleChange={handleChange} />;
     }
-    return <TextFieldInput value={data} name={key} handleChange={handleChange} />;
+    return (
+      <TextFieldInput value={data} name={key} handleChange={handleChange} />
+    );
   }
-
   if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
     return (
       <>
         {data &&
           data.length > 0 &&
           typeof data[0] === "string" &&
+          data.some(
+            (item) =>
+              item.includes(".jpg") ||
+              item.includes(".png") ||
+              item.includes(".jpeg")
+          ) &&
           data.map((item, index) => (
             <Box key={index} sx={{ mt: 2 }}>
               <img src={item} alt={index} />
@@ -70,58 +86,45 @@ function renderInputField(data, key, handleChange, handleOpenNestedModal) {
           data.length > 0 &&
           typeof data[0] === "object" &&
           data.map((item, index) => (
-            <Box key={index}>
-              {Object.keys(item).map((key) => (
-                <Box key={key} sx={{ mt: 2 }}>
+            <Box key={index} sx={{ px: 2, py: 1, background: "#f6f6f6" }}>
+              {Object.keys(item).map((nestedKey) => (
+                <Box key={nestedKey}>
                   <Typography variant="body1">
-                    <strong>{capitalizeFirstLetter(key)}</strong>
+                    <strong>{capitalizeFirstLetter(nestedKey)}</strong>
                   </Typography>
-                  {renderInputField(item[key], key, handleChange, () => handleOpenNestedModal())}
+                  {renderInputField(
+                    item[nestedKey],
+                    nestedKey,
+                    handleChange,
+                    handleOpenAddModal
+                  )}
                 </Box>
               ))}
-              <Button variant="contained" onClick={() => handleDelete(index)}>
+              <Button variant="outlined" onClick={() => handleDelete(index)}>
                 Delete
               </Button>
             </Box>
           ))}
-        <Button variant="contained" onClick={handleOpenNestedModal} sx={{ mt: 4 }}>
+        <Button variant="contained" onClick={handleOpenAddModal} sx={{ my: 2 }}>
           + Add
         </Button>
       </>
     );
   }
-
   return null;
 }
 
 export default function EditModal({ content, open, onClose, handleChange }) {
-  const [nestedModalOpen, setNestedModalOpen] = useState(false);
-  const [nestedContent, setNestedContent] = useState(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [addContent, setAddContent] = useState({});
 
-  const handleOpenNestedModal = (key) => {
-    setNestedContent(content[key]);
-    setNestedModalOpen(true);
+  const handleOpenAddModal = (key) => {
+    setAddContent(content[key]);
+    setAddModalOpen(true);
   };
 
   return (
     <div>
-      <Button
-        onClick={() => { }}
-        sx={{
-          background: "none",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          color: "black",
-          borderRadius: "6px",
-          border: "1px solid #000",
-        }}
-      >
-        <EditNoteIcon sx={{ p: 0, m: 0, width: 20 }} />
-        Edit
-      </Button>
       <Modal
         open={open}
         onClose={onClose}
@@ -133,18 +136,27 @@ export default function EditModal({ content, open, onClose, handleChange }) {
         <ModalContent
           sx={{ width: "50%", maxHeight: "75vh", overflowY: "auto" }}
         >
-          <Typography variant="h6" id="edit-modal-title">
+          <Typography variant="h4" id="edit-modal-title">
             Edit Content
           </Typography>
           {Object.keys(content).map((key) => (
             <Box key={key} sx={{ mt: 2 }}>
-              <Typography variant="body1">
+              <Typography variant="h5">
                 <strong>{capitalizeFirstLetter(key)}</strong>
               </Typography>
-              {renderInputField(content[key], key, handleChange, () => handleOpenNestedModal(key))}
+              {renderInputField(content[key], key, handleChange, () =>
+                handleOpenAddModal(key)
+              )}
             </Box>
           ))}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 2,
+              width: "100%",
+            }}
+          >
             <Button onClick={onClose} sx={{ mr: 1 }}>
               Cancel
             </Button>
@@ -155,11 +167,12 @@ export default function EditModal({ content, open, onClose, handleChange }) {
         </ModalContent>
       </Modal>
 
-      {nestedModalOpen && (
-        <EditModal
-          content={nestedContent}
-          open={nestedModalOpen}
-          onClose={() => setNestedModalOpen(false)}
+      {addModalOpen && (
+        <AddModal
+          data={addContent[0]}
+          content={addContent}
+          open={addModalOpen}
+          onClose={() => setAddModalOpen(false)}
         />
       )}
     </div>
@@ -168,6 +181,101 @@ export default function EditModal({ content, open, onClose, handleChange }) {
 
 EditModal.propTypes = {
   content: PropTypes.object.isRequired,
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  handleChange: PropTypes.func.isRequired,
+};
+
+function AddModal({ data, open, onClose }) {
+  return (
+    <div>
+      <Modal
+        open={open}
+        onClose={onClose}
+        aria-labelledby="edit-modal-title"
+        aria-describedby="edit-modal-description"
+        slots={{ backdrop: StyledBackdrop }}
+        sx={{ width: "100vw" }}
+      >
+        <ModalContent
+          sx={{ width: "50%", maxHeight: "75vh", overflowY: "auto" }}
+        >
+          <Typography variant="h4" id="edit-modal-title">
+            Add Content
+          </Typography>
+
+          <Box
+            sx={{
+              display: "-ms-flexbox",
+              justifyContent: "flex-end",
+              mt: 2,
+            }}
+          >
+            {data &&
+              data.length > 0 &&
+              Array.isArray(data) &&
+              data.some(
+                (item) =>
+                  item.includes(".jpg") ||
+                  item.includes(".png") ||
+                  item.includes(".jpeg")
+              ) &&
+              data.map((item, index) => (
+                <Box key={index} sx={{ mt: 2 }}>
+                  <ImageInput value={item} name={index} />
+                </Box>
+              ))}
+            {typeof data === "object" &&
+              Object.keys(data).map((key) => (
+                <Box key={key}>
+                  {data[key].includes(".jpg") ||
+                  data[key].includes(".png") ||
+                  data[key].includes(".jpeg") ? (
+                    <>
+                      <Typography variant="h6">{key}</Typography>
+                      <ImageListItem
+                        key={key}
+                        sx={{ width: "250px", height: "auto", my: 2 }}
+                      >
+                        <img src={data[key]} alt="hehe" />
+                      </ImageListItem>
+                    </>
+                  ) : (
+                    <TextField
+                      label={key}
+                      value={data[key]}
+                      fullWidth
+                      margin="normal"
+                      name={key}
+                      sx={{ my: 1, p: 0 }}
+                    />
+                  )}
+                </Box>
+              ))}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                mt: 2,
+                width: "100%",
+              }}
+            >
+              <Button onClick={onClose} sx={{ mr: 1 }}>
+                Cancel
+              </Button>
+              <Button onClick={onClose} variant="contained">
+                Add
+              </Button>
+            </Box>
+          </Box>
+        </ModalContent>
+      </Modal>
+    </div>
+  );
+}
+
+AddModal.propTypes = {
+  data: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
@@ -218,7 +326,8 @@ const ModalContent = styled("div")(
     background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
     border-radius: 8px;
     border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
-    box-shadow: 0 4px 12px ${theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"
+    box-shadow: 0 4px 12px ${
+      theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"
     };
     padding: 24px;
     color: ${theme.palette.mode === "dark" ? grey[50] : grey[900]};

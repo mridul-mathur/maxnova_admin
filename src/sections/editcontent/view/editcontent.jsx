@@ -17,11 +17,11 @@ const capitalizeFirstLetter = (string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
 export default function EditContent() {
-  const [homeData, setHomeData] = useState(home)
-  const [aboutData, setAboutData] = useState(about)
-  const [pcdData, setPcdData] = useState(pcdfran)
-  const [pvtData, setPvtData] = useState(pvtlabel)
-  const [customData, setCustomData] = useState(customform)
+  const [homeData, setHomeData] = useState(home);
+  const [aboutData, setAboutData] = useState(about);
+  const [pcdData, setPcdData] = useState(pcdfran);
+  const [pvtData, setPvtData] = useState(pvtlabel);
+  const [customData, setCustomData] = useState(customform);
 
   const [pages, setPages] = useState([
     { name: "home", data: homeData },
@@ -48,14 +48,14 @@ export default function EditContent() {
   };
 
   const onChange = (e) => {
-    const { value } = e.target
+    const { value } = e.target;
     setHomeData((prev) => ({
       ...prev,
-      [e.target.name]: value
-    }))
-  }
+      [e.target.name]: value,
+    }));
+  };
 
-  console.log(homeData)
+  console.log(homeData);
 
   return (
     <div>
@@ -97,7 +97,7 @@ export default function EditContent() {
 }
 
 function PageTable({ page, onEditClick }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const handleClick = useCallback(() => setOpen((prev) => !prev), []);
 
   return (
@@ -153,19 +153,19 @@ function SectionItem({ sectionName, sectionData }) {
             <List component="div" disablePadding sx={{ px: 2 }}>
               {Array.isArray(data)
                 ? data.map((item, index) => (
-                  <SectionItem
-                    key={index}
-                    sectionName={`${sectionName} [${index}]`}
-                    sectionData={item}
-                  />
-                ))
+                    <SectionItem
+                      key={index}
+                      sectionName={`${sectionName} [${index}]`}
+                      sectionData={item}
+                    />
+                  ))
                 : Object.keys(data).map((key) => (
-                  <SectionItem
-                    key={key}
-                    sectionName={key}
-                    sectionData={data[key]}
-                  />
-                ))}
+                    <SectionItem
+                      key={key}
+                      sectionName={key}
+                      sectionData={data[key]}
+                    />
+                  ))}
             </List>
           </Collapse>
         </>
@@ -261,15 +261,15 @@ const pvtlabel = {
     "We specialize in creating private solutions that meet your specific requirements.",
   steps: [
     {
-      head: "Step 1: Initial Consultation",
+      head: "Initial Consultation",
       text: "We begin by discussing your unique needs in detail.",
     },
     {
-      head: "Step 2: Customized Planning",
+      head: "Customized Planning",
       text: "Our experts develop a tailored plan to address your needs.",
     },
     {
-      head: "Step 3: Execution and Support",
+      head: "Execution and Support",
       text: "We implement the solution with ongoing support to ensure success.",
     },
   ],
@@ -282,15 +282,15 @@ const customform = {
   text_custom: "We offer tailored solutions to meet your unique needs.",
   steps: [
     {
-      head: "Step 1: Understanding Your Requirements",
+      head: "Understanding Your Requirements",
       text: "We begin by thoroughly understanding your specific needs and challenges.",
     },
     {
-      head: "Step 2: Developing a Strategy",
+      head: "Developing a Strategy",
       text: "Our team creates a customized strategy that aligns with your goals.",
     },
     {
-      head: "Step 3: Implementation",
+      head: "Implementation",
       text: "We implement the strategy with precision and focus on delivering results.",
     },
   ],
