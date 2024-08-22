@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import List from "@mui/material/List";
 import Collapse from "@mui/material/Collapse";
@@ -11,202 +11,103 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import EditModal from "./editmodal";
+import EditModal from "./edithome";
+import { Button, TextField, Box } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { getHomeUtil, updateHomeUtil } from "src/redux/actions/utilsAction";
+import UpdateHome from "./edithome";
+import UpdatePcd from "./editpcd";
+import UpdatePvt from "./editpvt";
+import UpdateCustom from "./editcustom";
 
 const capitalizeFirstLetter = (string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
 export default function EditContent() {
-  const [homeData, setHomeData] = useState(home);
+  const [homeData, setHomeData] = useState(null);
   const [aboutData, setAboutData] = useState(about);
   const [pcdData, setPcdData] = useState(pcdfran);
   const [pvtData, setPvtData] = useState(pvtlabel);
   const [customData, setCustomData] = useState(customform);
 
-  const [pages, setPages] = useState([
-    { name: "home", data: homeData },
-    { name: "about", data: aboutData },
-    { name: "PCD Franchise", data: pcdData },
-    { name: "Private Label", data: pvtData },
-    { name: "Custom Formulation", data: customData },
-  ]);
-  const [selectedPage, setSelectedPage] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const dispatch = useDispatch()
+  const home = useSelector(state => state.utils.homeutil)
 
-  const handleSave = (updatedData) => {
-    setPages((prevPages) =>
-      prevPages.map((page) =>
-        page.name === selectedPage.name ? { ...page, data: updatedData } : page
-      )
-    );
-    setModalOpen(false);
-  };
+  useEffect(() => {
+    dispatch(getHomeUtil())
+  }, [])
 
-  const handleEditClick = (page) => {
-    setSelectedPage(page);
-    setModalOpen(true);
-  };
+  useEffect(() => {
+    if (home) {
+      setHomeData(home[0])
+    }
+  }, [home])
 
-  const onChange = (e) => {
-    const { value } = e.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setHomeData((prev) => ({
       ...prev,
-      [e.target.name]: value,
+      [name]: value,
     }));
   };
-
-  console.log(homeData);
 
   return (
     <div>
       <Typography variant="h4" sx={{ mb: 4 }}>
         Edit Content
       </Typography>
-      <List
-        sx={{
-          width: "100%",
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          px: 2,
-        }}
-        component="nav"
-      >
-        <Typography variant="h6" sx={{ my: 1 }}>
-          Pages
-        </Typography>
-        {pages.map((page) => (
-          <PageTable
-            key={page.name}
-            page={page}
-            onEditClick={handleEditClick}
-          />
-        ))}
-      </List>
 
-      {selectedPage && (
-        <EditModal
-          content={selectedPage.data}
-          onSave={handleSave}
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          handleChange={onChange}
-        />
-      )}
+      <Box
+        sx={{
+          p: 5,
+          background: 'white'
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+          Home Utils
+        </Typography>
+        <UpdateHome />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: 'white'
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+          PCD Utils
+        </Typography>
+        <UpdatePcd />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: 'white'
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+          PVT Utils
+        </Typography>
+        <UpdatePvt />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: 'white'
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+          Custom Formulation Utils
+        </Typography>
+        <UpdateCustom />
+      </Box>
     </div>
   );
 }
 
-function PageTable({ page, onEditClick }) {
-  const [open, setOpen] = useState(false);
-  const handleClick = useCallback(() => setOpen((prev) => !prev), []);
-
-  return (
-    <>
-      <ListItemButton onClick={handleClick} sx={{ background: "#fff" }}>
-        <ListItemText primary={`${capitalizeFirstLetter(page.name)} Page`} />
-        <IconButton
-          onClick={() => onEditClick(page)}
-          sx={{ mx: 2, fontSize: "medium", gap: 1 }}
-        >
-          <EditIcon sx={{ fontSize: "medium" }} />
-          Edit
-        </IconButton>
-        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit sx={{ px: 2 }}>
-        <List component="div" disablePadding sx={{ px: 2 }}>
-          {Object.keys(page.data).map((sectionKey) => (
-            <SectionItem
-              key={sectionKey}
-              sectionName={sectionKey}
-              sectionData={page.data[sectionKey]}
-            />
-          ))}
-        </List>
-      </Collapse>
-    </>
-  );
-}
-
-function SectionItem({ sectionName, sectionData }) {
-  const [open, setOpen] = useState(false);
-  const handleClick = useCallback(() => setOpen((prev) => !prev), []);
-
-  const renderSectionContent = (data) => {
-    if (typeof data === "string") {
-      if (data.match(/\.(jpg|jpeg|png)$/i)) {
-        return <ImageItem src={data} alt={sectionName} />;
-      }
-      return data;
-    }
-
-    if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
-      return (
-        <>
-          <ListItemButton onClick={handleClick} sx={{ background: "#f0f0f0" }}>
-            <ListItemText
-              primary={<strong>{capitalizeFirstLetter(sectionName)}:</strong>}
-            />
-            {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </ListItemButton>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding sx={{ px: 2 }}>
-              {Array.isArray(data)
-                ? data.map((item, index) => (
-                    <SectionItem
-                      key={index}
-                      sectionName={`${sectionName} [${index}]`}
-                      sectionData={item}
-                    />
-                  ))
-                : Object.keys(data).map((key) => (
-                    <SectionItem
-                      key={key}
-                      sectionName={key}
-                      sectionData={data[key]}
-                    />
-                  ))}
-            </List>
-          </Collapse>
-        </>
-      );
-    }
-
-    return null;
-  };
-
-  return (
-    <ListItemText>
-      <strong>{capitalizeFirstLetter(sectionName)}:</strong>{" "}
-      {renderSectionContent(sectionData)}
-    </ListItemText>
-  );
-}
-
-function ImageItem({ src, alt }) {
-  return (
-    <img
-      src={src}
-      alt={alt || "Image"}
-      style={{ width: "auto", height: 100 }}
-    />
-  );
-}
-
-PageTable.propTypes = {
-  page: PropTypes.object.isRequired,
-  onEditClick: PropTypes.func.isRequired,
-};
-
-SectionItem.propTypes = {
-  sectionName: PropTypes.string.isRequired,
-  sectionData: PropTypes.any.isRequired,
-};
-
-ImageItem.propTypes = {
-  src: PropTypes.string.isRequired,
-  alt: PropTypes.string,
-};
 
 const home = {
   head_hero: "Welcome to Our Platform",
@@ -220,12 +121,12 @@ const home = {
   text1_whyus: "We provide exceptional services tailored to your needs.",
   whylist_whyus: "Expert team, 24/7 support, Proven results",
   text2_whyus: "Our commitment to excellence sets us apart.",
-  text_1_whyus: "High-quality service",
-  image_1_whyus: "../../../../public/assets/images/covers/cover_2.jpg",
-  image_alt_1_whyus: "Quality service illustration",
-  text_2_whyus: "Reliable and efficient solutions",
-  image_2_whyus: "../../../../public/assets/images/covers/cover_2.jpg",
-  image_alt_2_whyus: "Efficient solutions illustration",
+  text_3_whyus: "High-quality service",
+  image_3_whyus: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_3_whyus: "Quality service illustration",
+  text_4_whyus: "Reliable and efficient solutions",
+  image_4_whyus: "../../../../public/assets/images/covers/cover_2.jpg",
+  image_alt_4_whyus: "Efficient solutions illustration",
 };
 
 const about = {
