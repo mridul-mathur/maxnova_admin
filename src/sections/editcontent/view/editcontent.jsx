@@ -3,14 +3,12 @@ import React from "react";
 import { Box } from "@mui/system";
 import Typography from "@mui/material/Typography";
 
-import UpdateHome from "./edithome";
-import UpdatePcd from "./editpcd";
 import UpdatePvt from "./editpvt";
+import UpdatePcd from "./editpcd";
+import UpdateHome from "./edithome";
 import UpdateCustom from "./editcustom";
 
-
 export default function EditContent() {
-
   return (
     <div>
       <Typography variant="h4" sx={{ mb: 4 }}>
@@ -20,10 +18,10 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: 'white'
+          background: "white",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
           Home Utils
         </Typography>
         <UpdateHome />
@@ -32,10 +30,10 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: 'white'
+          background: "white",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
           PCD Utils
         </Typography>
         <UpdatePcd />
@@ -44,10 +42,10 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: 'white'
+          background: "white",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
           PVT Utils
         </Typography>
         <UpdatePvt />
@@ -56,10 +54,10 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: 'white'
+          background: "white",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 'bold', pb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
           Custom Formulation Utils
         </Typography>
         <UpdateCustom />
@@ -67,8 +65,6 @@ export default function EditContent() {
     </div>
   );
 }
-
-
 
 const about = {
   subhead_hero: "Welcome to Our Service",
@@ -94,6 +90,3 @@ const about = {
     },
   ],
 };
-
-
-

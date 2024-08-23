@@ -1,162 +1,132 @@
-import { TextField, Button, Typography } from "@mui/material";
-import { Stack } from "@mui/system";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import { Stack } from "@mui/system";
+import { Button, TextField, Typography } from "@mui/material";
+
 import { getPvtUtil, updatePvtUtil } from "src/redux/actions/utilsAction";
 
 export default function UpdatePvt() {
+  const [state, setState] = useState(null);
+  const [step, setStep] = useState({ head: "", text: "" });
 
-    const [state, setState] = useState(null)
+  const dispatch = useDispatch();
+  const pvt = useSelector((reduxState) => reduxState.utils.pvtutil);
 
-    const dispatch = useDispatch()
-    const pvt = useSelector(state => state.utils.pvtutil)
+  useEffect(() => {
+    dispatch(getPvtUtil());
+  }, [dispatch]);
 
-    const [step, setStep] = useState({
-        head: '',
-        text: ''
-    })
+  useEffect(() => {
+    if (pvt) {
+      setState(pvt[0]);
+    }
+  }, [pvt]);
 
-    useEffect(() => {
-        dispatch(getPvtUtil());
-    }, [])
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setState((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    useEffect(() => {
-        if (pvt) {
-            setState(pvt[0])
-        }
-    }, [pvt])
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (!files) return;
+    setState((prev) => ({
+      ...prev,
+      [name]: files[0],
+    }));
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setState((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+  const patchPvt = () => {
+    const formData = new FormData();
+    const fields = ["head_pvt", "image_alt_pvt", "text_pvt", "steps"];
 
-    const handleFileChange = (e) => {
-        const { name, files } = e.target
+    fields.forEach((field) =>
+      formData.append(
+        field,
+        field === "steps" ? JSON.stringify(state[field]) : state[field]
+      )
+    );
 
-        if (!files) {
-            return;
-        }
-
-        setState((prev) => ({
-            ...prev,
-            [name]: files[0]
-        }))
+    if (typeof state.image_pvt === "object") {
+      formData.append("image_pvt", state.image_pvt);
     }
 
-    const patchPvt = () => {
-        const formData = new FormData();
+    dispatch(updatePvtUtil(state._id, formData));
+  };
 
-        formData.append('head_pvt', state.head_pvt);
-        formData.append('image_alt_pvt', state.image_alt_pvt);
-        formData.append('text_pvt', state.text_pvt);
-        formData.append('steps', JSON.stringify(state.steps));
+  const handleChangeSteps = (e) => {
+    const { name, value } = e.target;
+    setStep((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-        if (typeof state.image_pvt === "object") {
-            formData.append('image_pvt', state.image_pvt);
-        }
+  const handleDeleteSteps = (id) => {
+    const temp = state.steps.filter((_, i) => i !== id);
+    setState((prev) => ({
+      ...prev,
+      steps: temp,
+    }));
+  };
 
-        dispatch(updatePvtUtil(state._id, formData))
-    }
+  const handleAddStep = () => {
+    const temp = [...state.steps, step];
+    setState((prev) => ({
+      ...prev,
+      steps: temp,
+    }));
+    setStep({ head: "", text: "" });
+  };
 
-    const handleChangeSteps = (e) => {
-        const { name, value } = e.target
-        setStep((prev) => ({
-            ...prev,
-            [name]: value
-        }))
-    }
-
-    const handleDeleteSteps = (id) => {
-        const temp = state.steps.filter((_, i) => i !== id)
-        setState((prev) => ({
-            ...prev,
-            steps: temp
-        }))
-    }
-
-    const handleAddStep = () => {
-        const temp = [...state.steps]
-        temp.push(step)
-        setState((prev) => ({
-            ...prev,
-            steps: temp
-        }))
-        setStep({
-            head: '',
-            text: ''
-        })
-    }
-
-    return (
-        state &&
-        <>
-            <Stack direction="column" spacing={2}>
-                <TextField
-                    name="head_pvt"
-                    value={state.head_pvt}
-                    onChange={handleChange}
-                    label="head_pvt"
-                />
-                <TextField
-                    name="text_pvt"
-                    value={state.text_pvt}
-                    onChange={handleChange}
-                    label="text_pvt"
-                />
-                <img
-                    src={state.image_pvt}
-                    alt="image"
-                    height="100px"
-                    width="100px"
-                />
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    name="image_pvt"
-                />
-                <TextField
-                    name="image_alt_pvt"
-                    value={state.image_alt_pvt}
-                    onChange={handleChange}
-                    label="image_alt_pvt"
-                />
-                <TextField
-                    name="head"
-                    value={step.head}
-                    onChange={handleChangeSteps}
-                    label="head"
-                />
-                <TextField
-                    name="text"
-                    value={step.text}
-                    onChange={handleChangeSteps}
-                    label="text"
-                />
-                <Button onClick={handleAddStep}>
-                    Add Step
-                </Button>
-                {state && state.steps.map((step, i) => (
-                    <>
-                        <Typography key={i}>
-                            <b>Head:</b> {step.head}
-                        </Typography>
-                        <Typography key={i}>
-                            <b>Text:</b> {step.text}
-                        </Typography>
-                        <Button onClick={() => handleDeleteSteps(i)}>
-                            Remove
-                        </Button>
-                    </>
-                ))}
-                <Button variant="contained" onClick={patchPvt}>
-                    Update
-                </Button>
-            </Stack>
-        </>
+  return (
+    state && (
+      <Stack direction="column" spacing={2}>
+        {["head_pvt", "text_pvt", "image_alt_pvt"].map((name) => (
+          <TextField
+            key={name}
+            name={name}
+            value={state[name]}
+            onChange={handleChange}
+            label={name}
+          />
+        ))}
+        <img src={state.image_pvt} alt="" height="100px" width="100px" />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          name="image_pvt"
+        />
+        {["head", "text"].map((name) => (
+          <TextField
+            key={name}
+            name={name}
+            value={step[name]}
+            onChange={handleChangeSteps}
+            label={name}
+          />
+        ))}
+        <Button onClick={handleAddStep}>Add Step</Button>
+        {state.steps.map((step, i) => (
+          <React.Fragment key={i}>
+            <Typography>
+              <b>Head:</b> {step.head}
+            </Typography>
+            <Typography>
+              <b>Text:</b> {step.text}
+            </Typography>
+            <Button onClick={() => handleDeleteSteps(i)}>Remove</Button>
+          </React.Fragment>
+        ))}
+        <Button variant="contained" onClick={patchPvt}>
+          Update
+        </Button>
+      </Stack>
     )
+  );
 }
