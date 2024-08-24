@@ -1,10 +1,15 @@
-import { GETPCDUTIL, GETPVTUTIL, GETHOMEUTIL, GETCUSTOMUTIL, PATCHHOMEUTIL, UPDATEPCDUTIL, UPDATEPVTUTIL, UPDATECUSTOMUTIL } from "../actions/utilsAction"
+import {
+    GETPCDUTIL, GETPVTUTIL, GETHOMEUTIL, GETABOUTUTIL, GETCUSTOMUTIL, PATCHHOMEUTIL, UPDATEPCDUTIL, UPDATEPVTUTIL, ADDCERTIFICATE,
+    GETCERTIFICATE, UPDATEABOUTUTIL, UPDATECUSTOMUTIL, DELETECERTIFICATE
+} from "../actions/utilsAction"
 
 const initialState = {
     homeutil: null,
     pcdutil: null,
     pvtutil: null,
-    customutil: null
+    customutil: null,
+    aboututil: null,
+    certificates: null
 }
 
 export const utilsReducer = (state = initialState, action) => {
@@ -49,6 +54,33 @@ export const utilsReducer = (state = initialState, action) => {
             }
         }
         case UPDATECUSTOMUTIL: {
+            return {
+                ...state
+            }
+        }
+        case GETABOUTUTIL: {
+            return {
+                ...state,
+                aboututil: action.payload
+            }
+        }
+        case UPDATEABOUTUTIL: {
+            return {
+                ...state
+            }
+        }
+        case GETCERTIFICATE: {
+            return {
+                ...state,
+                certificates: action.payload
+            }
+        }
+        case DELETECERTIFICATE: {
+            return {
+                ...state
+            }
+        }
+        case ADDCERTIFICATE: {
             return {
                 ...state
             }

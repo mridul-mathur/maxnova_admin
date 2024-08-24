@@ -7,6 +7,8 @@ import UpdatePvt from "./editpvt";
 import UpdatePcd from "./editpcd";
 import UpdateHome from "./edithome";
 import UpdateCustom from "./editcustom";
+import UpdateAbout from "./editabout";
+import UpdateCertificates from "./editCertificates"
 
 export default function EditContent() {
   return (
@@ -61,6 +63,30 @@ export default function EditContent() {
           Custom Formulation Utils
         </Typography>
         <UpdateCustom />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: "white",
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+          About Utils
+        </Typography>
+        <UpdateAbout />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: "white",
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+          Certificates Utils
+        </Typography>
+        <UpdateCertificates />
       </Box>
     </div>
   );

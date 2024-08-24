@@ -68,7 +68,6 @@ export default function UpdateHome() {
     dispatch(updateHomeUtil(state._id, formData));
   };
 
-  console.log(state);
 
   return (
     state && (
