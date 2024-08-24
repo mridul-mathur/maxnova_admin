@@ -48,68 +48,71 @@ export default function UpdateCertificates() {
         const formData = new FormData();
         const fields = ["text", "image_alt"];
 
-        fields.forEach((field) =>
+        fields.forEach((field) => {
             formData.append(
                 field, certificate[field]
             )
-        );
+        });
 
-        if (typeof certificate.image === "object") {
-            formData.append("image", certificate.image);
-        }
-
+        formData.append("image", certificate.image);
 
         dispatch(addCertificate(formData));
+
+        setCertificate({
+            text: '',
+            image: null,
+            image_alt: ''
+        })
     };
 
 
     const handleDelete = (id) => {
         dispatch(deleteCertificate(id))
-    } 
+    }
 
 
-    console.log(state)
+    console.log(certificate)
 
 
-    return (  state &&
-            <Stack direction="column" spacing={2}>
-                {["text", "image_alt"].map((name) => (
-                    <TextField
-                        key={name}
-                        name={name}
-                        value={state[name]}
-                        onChange={handleChange}
-                        label={name}
-                    />
-                ))}
-                <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    name="image"
+    return (state &&
+        <Stack direction="column" spacing={2}>
+            {["text", "image_alt"].map((name) => (
+                <TextField
+                    key={name}
+                    name={name}
+                    value={state[name]}
+                    onChange={handleChange}
+                    label={name}
                 />
-                {state && state.map((data) => (
-                    <>
-                        <Typography>
-                            <b>Text:</b> {data.text}
-                        </Typography>
-                        <Typography>
-                            <b>Image Alt:</b> {data.image_alt}
-                        </Typography>
-                        <img
-                            src={data.image}
-                            alt="image"
-                            width="100px"
-                            height="100px"
-                        />
-                        <Button onClick={handleDelete(data._id)}>
-                            Delete
-                        </Button>
-                    </>
-                ))}
-                <Button variant="contained" onClick={() => handleAdd()}>
-                    Add
-                </Button>
-            </Stack>
+            ))}
+            <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                name="image"
+            />
+            {state && state.map((data) => (
+                <>
+                    <Typography key={data._id}>
+                        <b>Text:</b> {data.text}
+                    </Typography>
+                    <Typography>
+                        <b>Image Alt:</b> {data.image_alt}
+                    </Typography>
+                    <img
+                        src={data.image}
+                        alt="image"
+                        width="100px"
+                        height="100px"
+                    />
+                    <Button onClick={() => handleDelete(data._id)}>
+                        Delete
+                    </Button>
+                </>
+            ))}
+            <Button variant="contained" onClick={handleAdd}>
+                Add
+            </Button>
+        </Stack>
     );
 }
