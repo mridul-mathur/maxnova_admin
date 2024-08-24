@@ -68,7 +68,6 @@ export default function UpdateHome() {
     dispatch(updateHomeUtil(state._id, formData));
   };
 
-
   return (
     state && (
       <Stack direction="column" spacing={2}>
@@ -78,6 +77,7 @@ export default function UpdateHome() {
           { name: "subhead_about", label: "subhead_about" },
           { name: "text_about", label: "text_about" },
           { name: "image_alt_about", label: "image_alt_about" },
+          { name: "head_whyus", label: "head_whyus" },
           { name: "text1_whyus", label: "text1_whyus" },
           { name: "text2_whyus", label: "text2_whyus" },
           { name: "text_3_whyus", label: "text_3_whyus" },
