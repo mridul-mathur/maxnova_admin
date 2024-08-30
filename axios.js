@@ -5,7 +5,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
 } else {
   axios.defaults.baseURL = "http://127.0.0.1:8000/";
 }
-axios.defaults.baseURL = "http://127.0.0.1:4000/";
+axios.defaults.baseURL = "https://maxnovabackend-38x5s.ondigitalocean.app/";
 
 axios.interceptors.response.use(
   function (response) {

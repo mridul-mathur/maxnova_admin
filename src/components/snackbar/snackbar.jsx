@@ -5,15 +5,16 @@ import { hideSnackBar } from "src/redux/actions/snackbarAction";
 
 const SnackBar = () => {
     const dispatch = useDispatch();
-    const { open, message, severity } = useSelector((state) => state.snackbar);
+    const { show, message, severity } = useSelector((state) => state.snackbar);
 
     const handleClose = () => {
         dispatch(hideSnackBar());
     };
 
+
     return (
         <>
-            <Snackbar open={open} autoHideDuration={3000} onClose={() => handleClose()} anchorOrigin={{
+            <Snackbar open={show} autoHideDuration={3000} onClose={() => handleClose()} anchorOrigin={{
                vertical: 'top',
                horizontal: 'center' 
             }}>

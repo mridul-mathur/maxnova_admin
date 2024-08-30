@@ -181,7 +181,6 @@ export default function ProductsView() {
 
   const handleEdit = (id, productDetails) => {
     const data = new FormData();
-    console.log(productDetails)
     data.append('name', productDetails.name)
     data.append('category_id', productDetails.category_id)
     data.append('company_id', productDetails.company_id)

@@ -1,4 +1,5 @@
 import axios from '../../../axios'
+import { showSnackBar } from './snackbarAction'
 
 export const CATEGORY = 'CATEGORY'
 export const ADDCATEGORY = 'ADDCATEGORY'
@@ -13,7 +14,7 @@ export function getAllCategory() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -30,28 +31,30 @@ export function addNewCategory(data) {
                 type: ADDCATEGORY,
                 payload: res.data
             })
+            dispatch(showSnackBar('Added New Category Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
 
 
-export function deleteCategory(id){
-    return(dispatch) => {
+export function deleteCategory(id) {
+    return (dispatch) => {
         axios.delete(`api/category/${id}`).then((res) => {
             dispatch(getAllCategory());
             dispatch({
                 type: DELETECATEGORY,
                 payload: res.data
-            }).catch((error) => {
-                console.log(error.response.data.errors[0].msg)
             })
+            dispatch(showSnackBar('Deleted Category Successfully!', 'success'))
+        }).catch((error) => {
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
 
-export function updateCategory(id, data){
+export function updateCategory(id, data) {
     return (dispatch) => {
         axios.patch(`api/category/${id}`, {
             name: data.name,
@@ -62,8 +65,9 @@ export function updateCategory(id, data){
                 type: UPDATECATEGORY,
                 payload: res.data
             })
+            dispatch(showSnackBar('Updated Category Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }

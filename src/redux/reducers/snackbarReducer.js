@@ -1,13 +1,13 @@
 import { SHOW, HIDE } from "../actions/snackbarAction";
 
 const initialState = {
-    show: null,
-    severity: null,
-    message: null
+    show: false,
+    severity: 'info',
+    message: ''
 }
 
-export const snackBarReducer = (state=initialState, action) => {
-    switch(action.type) {
+export const snackBarReducer = (state = initialState, action) => {
+    switch (action.type) {
         case SHOW: {
             return {
                 ...state,
@@ -19,7 +19,9 @@ export const snackBarReducer = (state=initialState, action) => {
         case HIDE: {
             return {
                 ...state,
-                show: null
+                show: false,
+                message: '',
+                severity: 'info'
             }
         }
         default: {

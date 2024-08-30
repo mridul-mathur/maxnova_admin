@@ -71,7 +71,6 @@ export default function UpdateCertificates() {
     }
 
 
-    console.log(certificate)
 
 
     return (state &&

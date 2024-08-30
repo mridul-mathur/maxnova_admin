@@ -2,10 +2,10 @@ export const SHOW = 'SHOW'
 export const HIDE = 'HIDE'
 
 
-export function showSnackBar(data) {
+export function showSnackBar(message, severity) {
     return  {
         type: SHOW,
-        data
+        payload: { message, severity }
     }
 }
 

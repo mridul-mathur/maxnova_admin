@@ -14,7 +14,6 @@ const AuthGuard = ({ children }) => {
         }
     }, [isAuthenticated])
     let authenticated = isAuthenticated;
-    console.log(authenticated)
     return <>{authenticated ? children : navigate('/')}</>;
 }
 

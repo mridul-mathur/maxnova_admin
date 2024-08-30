@@ -1,8 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { createContext, useReducer } from 'react'
 import axios from '../../axios'
 import { showSnackBar } from 'src/redux/actions/snackbarAction'
+import { useDispatch } from 'react-redux'
 
 const initialState = {
     isAuthenticated: false,
@@ -53,6 +54,7 @@ const AuthContext = createContext({
 
 export const AuthProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState)
+    const dispatchRedux = useDispatch()
 
     const login = (username, password) => {
         axios.post('api/login/', {
@@ -69,9 +71,9 @@ export const AuthProvider = ({ children }) => {
                     username: username
                 }
             })
+            dispatchRedux(showSnackBar('Login Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
-            dispatch(showSnackBar({ severity: 'alert', message: "ibio" }))
+            dispatchRedux(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 
@@ -79,6 +81,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setSession(null)
         dispatch({ type: 'LOGOUT' })
+        dispatchRedux(showSnackBar('Logout Successfully!', 'success'))
     }
 
     useMemo(() => {

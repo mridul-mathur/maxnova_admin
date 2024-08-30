@@ -1,4 +1,5 @@
 import axios from '../../../axios'
+import { showSnackBar } from './snackbarAction'
 
 export const PATCHHOMEUTIL = 'PATCHHOMEUTIL'
 export const GETHOMEUTIL = 'GETHOMEUTIL'
@@ -24,8 +25,9 @@ export function updateHomeUtil(id, data) {
                 type: PATCHHOMEUTIL,
                 payload: res.data
             })
+            dispatch(showSnackBar('Updated Home Utils Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -38,7 +40,7 @@ export function getHomeUtil() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -52,8 +54,9 @@ export function updatePcdUtil(id, data) {
                 type: UPDATEPCDUTIL,
                 payload: res.data
             })
+            dispatch(showSnackBar('Updated PCD Utils Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -66,7 +69,7 @@ export function getPcdUtil() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -80,8 +83,9 @@ export function updatePvtUtil(id, data) {
                 type: UPDATEPVTUTIL,
                 payload: res.data
             })
+            dispatch(showSnackBar('Updated PVT Utils Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -94,7 +98,7 @@ export function getPvtUtil() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -108,8 +112,9 @@ export function updateCustomUtil(id, data) {
                 type: UPDATECUSTOMUTIL,
                 payload: res.data
             })
+            dispatch(showSnackBar('Updated Custom Formulatils Utils Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -122,7 +127,7 @@ export function getCustomUtil() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -135,8 +140,9 @@ export function updateAboutUtil(id, data) {
                 type: UPDATEABOUTUTIL,
                 payload: res.data
             })
+            dispatch(showSnackBar('Updated About Utils Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -149,7 +155,7 @@ export function getAboutUtil() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -163,7 +169,7 @@ export function getCertificates() {
                 payload: res.data
             })
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
@@ -176,13 +182,14 @@ export function deleteCertificate(id) {
                 type: DELETECERTIFICATE,
                 payload: res.data
             })
+            dispatch(showSnackBar('Deleted Certificate Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }
 
-export function addCertificate(data){
+export function addCertificate(data) {
     return (dispatch) => {
         axios.post(`/api/utils/add-certificate`, data).then((res) => {
             dispatch(getCertificates())
@@ -190,8 +197,9 @@ export function addCertificate(data){
                 type: ADDCERTIFICATE,
                 payload: res.data
             })
+            dispatch(showSnackBar('Added New Certificate Successfully!', 'success'))
         }).catch((error) => {
-            console.log(error.response.data.errors[0].msg)
+            dispatch(showSnackBar(error.response.data.errors[0].msg, 'error'))
         })
     }
 }

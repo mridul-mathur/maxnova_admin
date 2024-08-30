@@ -6,6 +6,9 @@ import Link from "@mui/material/Link";
 import { useTheme } from "@mui/material/styles";
 
 import { RouterLink } from "src/routes/components";
+import useAuth from "src/context/useAuth";
+
+import logomaxnova from "../../../public/logoblack.png"
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +20,8 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
   const PRIMARY_MAIN = theme.palette.primary.main;
 
   const PRIMARY_DARK = theme.palette.primary.dark;
+
+  const { isAuthenticated } = useAuth()
 
   // OR using local (public folder)
   // -------------------------------------------------------
@@ -85,9 +90,18 @@ const Logo = forwardRef(({ disabledLink = false, sx, ...other }, ref) => {
     return logo;
   }
 
+  console.log(isAuthenticated)
+
   return (
-    <Link component={RouterLink} href="/" sx={{ display: "contents" }}>
-      {logo}
+    <Link component={RouterLink} href={isAuthenticated ? "/dashboard" : "/"} sx={{ display: "contents" }}>
+      <Box sx={{pt: 3, pl: 4}}>
+        <img
+          src={logomaxnova}
+          alt="logo-maxnova"
+          width="50px"
+          height="25px"
+        />
+      </Box>
     </Link>
   );
 });
