@@ -6,9 +6,9 @@ import Typography from "@mui/material/Typography";
 import UpdatePvt from "./editpvt";
 import UpdatePcd from "./editpcd";
 import UpdateHome from "./edithome";
-import UpdateCustom from "./editcustom";
 import UpdateAbout from "./editabout";
-import UpdateCertificates from "./editCertificates"
+import UpdateCustom from "./editcustom";
+import UpdateCertificates from "./editCertificates";
 
 export default function EditContent() {
   return (
