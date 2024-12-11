@@ -112,13 +112,13 @@ export default function UpdateCustom() {
           />
         ))}
         <Button onClick={handleAddStep}>Add Step</Button>
-        {state.steps.map((step, i) => (
+        {state.steps.map((stp, i) => (
           <React.Fragment key={i}>
             <Typography>
-              <b>Head:</b> {step.head}
+              <b>Head:</b> {stp.head}
             </Typography>
             <Typography>
-              <b>Text:</b> {step.text}
+              <b>Text:</b> {stp.text}
             </Typography>
             <Button onClick={() => handleDeleteSteps(i)}>Remove</Button>
           </React.Fragment>

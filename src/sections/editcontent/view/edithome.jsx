@@ -8,6 +8,7 @@ import { getHomeUtil, updateHomeUtil } from "src/redux/actions/utilsAction";
 
 export default function UpdateHome() {
   const [state, setState] = useState(null);
+  const [faq, setFaq] = useState({ ques: "", ans: "" });
   const [vertical, setVertical] = useState({ head: "", image: null });
 
   const dispatch = useDispatch();
@@ -74,6 +75,31 @@ export default function UpdateHome() {
     }));
   };
 
+  const handleChangeFaqs = (e) => {
+    const { name, value } = e.target;
+    setFaq((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDeleteFaqs = (id) => {
+    const temp = state.faqs.filter((_, i) => i !== id);
+    setState((prev) => ({
+      ...prev,
+      faqs: temp,
+    }));
+  };
+
+  const handleAddFaqs = () => {
+    const temp = [...state.faqs, faq];
+    setState((prev) => ({
+      ...prev,
+      faqs: temp,
+    }));
+    setFaq({ ques: "", ans: "" });
+  };
+
   const patchHome = () => {
     const formData = new FormData();
     const fields = [
@@ -93,10 +119,14 @@ export default function UpdateHome() {
       "image_alt_3_whyus",
       "text_4_whyus",
       "image_alt_4_whyus",
+      "faqs",
     ];
-
-    fields.forEach((field) => formData.append(field, state[field]));
-
+    fields.forEach((field) =>
+      formData.append(
+        field,
+        field === "faqs" ? JSON.stringify(state[field]) : state[field]
+      )
+    );
     [
       "image_about1",
       "image_about2",
@@ -108,14 +138,19 @@ export default function UpdateHome() {
         formData.append(field, state[field]);
       }
     });
+
     if (state.verticals) {
       state.verticals.forEach((vert, index) => {
+        // Append each vertical's head and image separately
         formData.append(`verticals[${index}][head]`, vert.head);
-        if (typeof vert.image === "object") {
+
+        // Make sure you're appending the actual file, not a string
+        if (vert.image) {
           formData.append(`verticals[${index}][image]`, vert.image);
         }
       });
     }
+
     dispatch(updateHomeUtil(state._id, formData));
   };
 
@@ -166,6 +201,30 @@ export default function UpdateHome() {
             />
           </React.Fragment>
         ))}
+
+        {["ques", "ans"].map((name) => (
+          <TextField
+            key={name}
+            name={name}
+            value={faq[name]}
+            onChange={handleChangeFaqs}
+            label={name}
+          />
+        ))}
+
+        <Button onClick={handleAddFaqs}>Add FAQ</Button>
+        {state.faqs.map((stp, i) => (
+          <React.Fragment key={i}>
+            <Typography>
+              <b>Question:</b> {stp.ques}
+            </Typography>
+            <Typography>
+              <b>Answer:</b> {stp.ans}
+            </Typography>
+            <Button onClick={() => handleDeleteFaqs(i)}>Remove FAQ</Button>
+          </React.Fragment>
+        ))}
+
         <Typography variant="h6">Verticals</Typography>
         <TextField
           name="head"
@@ -188,7 +247,11 @@ export default function UpdateHome() {
             {vert.image && (
               <img
                 onChange={handleFileChange}
-                src={URL.createObjectURL(vert.image)}
+                src={
+                  typeof vert.image === "string"
+                    ? vert.image
+                    : URL.createObjectURL(vert.image)
+                }
                 alt="Vertical"
                 height="100px"
                 width="100px"
