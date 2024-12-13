@@ -9,6 +9,7 @@ import { getHomeUtil, updateHomeUtil } from "src/redux/actions/utilsAction";
 export default function UpdateHome() {
   const [state, setState] = useState(null);
   const [faq, setFaq] = useState({ ques: "", ans: "" });
+  const [numb, setNumb] = useState({ numb: 0, head: "" });
   const [vertical, setVertical] = useState({ head: "", image: null });
 
   const dispatch = useDispatch();
@@ -100,6 +101,31 @@ export default function UpdateHome() {
     setFaq({ ques: "", ans: "" });
   };
 
+  const handleChangeNumbs = (e) => {
+    const { name, value } = e.target;
+    setNumb((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDeleteNumbs = (id) => {
+    const temp = state.numbs.filter((_, i) => i !== id);
+    setState((prev) => ({
+      ...prev,
+      numbs: temp,
+    }));
+  };
+
+  const handleAddNumbs = () => {
+    const temp = [...state.numbs, numb];
+    setState((prev) => ({
+      ...prev,
+      numbs: temp,
+    }));
+    setNumb({ numb: 0, head: "" });
+  };
+
   const patchHome = () => {
     const formData = new FormData();
     const fields = [
@@ -120,11 +146,14 @@ export default function UpdateHome() {
       "text_4_whyus",
       "image_alt_4_whyus",
       "faqs",
+      "numbs",
     ];
     fields.forEach((field) =>
       formData.append(
         field,
-        field === "faqs" ? JSON.stringify(state[field]) : state[field]
+        field === "numbs" || field === "faqs"
+          ? JSON.stringify(state[field])
+          : state[field]
       )
     );
     [
@@ -202,6 +231,7 @@ export default function UpdateHome() {
           </React.Fragment>
         ))}
 
+        <Typography variant="h6">FAQs</Typography>
         {["ques", "ans"].map((name) => (
           <TextField
             key={name}
@@ -222,6 +252,30 @@ export default function UpdateHome() {
               <b>Answer:</b> {stp.ans}
             </Typography>
             <Button onClick={() => handleDeleteFaqs(i)}>Remove FAQ</Button>
+          </React.Fragment>
+        ))}
+
+        <Typography variant="h6">Numbers</Typography>
+        {["numb", "head"].map((name) => (
+          <TextField
+            key={name}
+            name={name}
+            value={numb[name]}
+            onChange={handleChangeNumbs}
+            label={name}
+          />
+        ))}
+
+        <Button onClick={handleAddNumbs}>Add Number</Button>
+        {state.numbs.map((stp, i) => (
+          <React.Fragment key={i}>
+            <Typography>
+              <b>Number:</b> {stp.numb}
+            </Typography>
+            <Typography>
+              <b>Heading:</b> {stp.head}
+            </Typography>
+            <Button onClick={() => handleDeleteNumbs(i)}>Remove Number</Button>
           </React.Fragment>
         ))}
 
@@ -264,7 +318,7 @@ export default function UpdateHome() {
         ))}
 
         <Button variant="contained" onClick={patchHome}>
-          Update Home
+          Update Home Page
         </Button>
       </Stack>
     )

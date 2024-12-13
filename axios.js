@@ -7,7 +7,9 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
 }
 axios.defaults.baseURL = "https://maxnovabackend-38x5s.ondigitalocean.app/";
 
-axios.interceptors.response.use(
+//maxnovabackend-38x5s.ondigitalocean.app/
+
+https: axios.interceptors.response.use(
   function (response) {
     return response;
   },

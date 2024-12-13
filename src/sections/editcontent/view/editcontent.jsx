@@ -36,6 +36,30 @@ export default function EditContent() {
         }}
       >
         <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+          About Utils
+        </Typography>
+        <UpdateAbout />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: "white",
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+          Certificates Utils
+        </Typography>
+        <UpdateCertificates />
+      </Box>
+
+      <Box
+        sx={{
+          p: 5,
+          background: "white",
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
           PCD Utils
         </Typography>
         <UpdatePcd />
@@ -64,55 +88,6 @@ export default function EditContent() {
         </Typography>
         <UpdateCustom />
       </Box>
-
-      <Box
-        sx={{
-          p: 5,
-          background: "white",
-        }}
-      >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
-          About Utils
-        </Typography>
-        <UpdateAbout />
-      </Box>
-
-      <Box
-        sx={{
-          p: 5,
-          background: "white",
-        }}
-      >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
-          Certificates Utils
-        </Typography>
-        <UpdateCertificates />
-      </Box>
     </div>
   );
 }
-
-const about = {
-  subhead_hero: "Welcome to Our Service",
-  image: [
-    "../../../../public/assets/images/covers/cover_2.jpg",
-    "../../../../public/assets/images/covers/cover_2.jpg",
-  ],
-  subhead_about: "About Us",
-  text_about:
-    "We are committed to providing the best service to our customers.",
-  image_about: "../../../../public/assets/images/covers/cover_2.jpg",
-  image_alt_about: "Our Team at Work",
-  certificates: [
-    {
-      text: "Certified Excellence",
-      image: "../../../../public/assets/images/covers/cover_2.jpg",
-      image_alt: "Certificate of Excellence",
-    },
-    {
-      text: "Industry Standard",
-      image: "../../../../public/assets/images/covers/cover_2.jpg",
-      image_alt: "Standard Certification",
-    },
-  ],
-};
