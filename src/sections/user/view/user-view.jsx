@@ -1,62 +1,46 @@
-import { useState, forwardRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewCompany, getAllCompany } from "src/redux/actions/companyAction";
 import {
   addNewCategory,
   getAllCategory,
 } from "src/redux/actions/categoryAction";
-import PropTypes from "prop-types";
-import Card from "@mui/material/Card";
-import Stack from "@mui/material/Stack";
-import Table from "@mui/material/Table";
-import Button from "@mui/material/Button";
+
 import Container from "@mui/material/Container";
-import TableBody from "@mui/material/TableBody";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import { TextField, Box } from "@mui/material";
 
-import { users } from "src/_mock/user";
 import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 import CustomeModel from "../model/model";
-import TableNoData from "../table-no-data";
 import UserTableRow from "../user-table-row";
 import UserTableHead from "../user-table-head";
-import TableEmptyRows from "../table-empty-rows";
 import UserTableToolbar from "../user-table-toolbar";
-import { emptyRows, applyFilter, getComparator } from "../utils";
 
 // ----------------------------------------------------------------------
 
-const initialCompanyData = {
-  name: "",
-  description: "",
-  image: null,
-};
-
-const initialCategoryData = {
-  name: "",
-  description: "",
-};
+const initialData = { name: "", description: "", image: null };
 
 export default function UserPage() {
-  const [page, setPage] = useState(0);
-
-  const [order, setOrder] = useState("asc");
-
-  const [selected, setSelected] = useState([]);
-
   const dispatch = useDispatch();
-  const allcompany = useSelector((state) => state.company.allcompany);
-  const allcategory = useSelector((state) => state.category.allcategory);
 
-  const [companyData, setCompanyData] = useState(null);
-  const [categoryData, setCategoryData] = useState(null);
+  const allCompany = useSelector((state) => state.company.allcompany);
+  const allCategory = useSelector((state) => state.category.allcategory);
 
-  const [newCompany, setNewCompany] = useState(initialCompanyData);
-  const [newCategory, setNewCategory] = useState(initialCategoryData);
+  const [companyData, setCompanyData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+
+  const [newCompany, setNewCompany] = useState(initialData);
+  const [newCategory, setNewCategory] = useState(initialData);
+
+  const [openCompany, setOpenCompany] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
 
   useEffect(() => {
     dispatch(getAllCompany());
@@ -64,309 +48,120 @@ export default function UserPage() {
   }, []);
 
   useEffect(() => {
-    if (allcompany) {
-      setCompanyData(allcompany);
-    }
-  }, [allcompany]);
+    if (allCompany) setCompanyData(allCompany);
+  }, [allCompany]);
 
   useEffect(() => {
-    if (allcategory) {
-      setCategoryData(allcategory);
-    }
-  }, [allcategory]);
+    if (allCategory) setCategoryData(allCategory);
+  }, [allCategory]);
 
-  const handleChangeCompany = (event) => {
-    const { value } = event.target;
-    setNewCompany((prev) => ({
-      ...prev,
-      [event.target.name]: value,
-    }));
-  };
-
-  const handleChangeCategory = (event) => {
-    const { value } = event.target;
-    setNewCategory((prev) => ({
-      ...prev,
-      [event.target.name]: value,
-    }));
-  };
-
-  const [orderBy, setOrderBy] = useState("name");
-
-  const [filterName, setFilterName] = useState("");
-
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const [openCompany, setOpenCompany] = useState(false);
-  const [openCategory, setOpenCategory] = useState(false);
-
-  const handleOpen = (name) => {
-    if (name === "company") {
-      setOpenCompany(true);
-    } else {
-      setOpenCategory(true);
-    }
-  };
-
-  const handleClose = (name) => {
-    if (name === "company") {
-      setOpenCompany(false);
-      setNewCategory(initialCompanyData);
-    } else {
-      setOpenCategory(false);
-      setNewCategory(initialCategoryData);
-    }
-  };
-
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === "asc";
-    if (id !== "") {
-      setOrder(isAsc ? "desc" : "asc");
-      setOrderBy(id);
-    }
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
-  };
-
-  const handleFilterByName = (event) => {
-    setPage(0);
-    setFilterName(event.target.value);
-  };
-
-  // const dataFiltered = applyFilter({
-  //   inputData: companyData,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  const handleFileChange = (event) => {
+  const handleFileChange = (event, isCompany = true) => {
     const file = event.target.files[0];
-
-    if (!file) {
-      return;
+    if (file) {
+      const setter = isCompany ? setNewCompany : setNewCategory;
+      setter((prev) => ({ ...prev, image: file }));
     }
-
-    setNewCompany((prev) => ({
-      ...prev,
-      image: file,
-    }));
   };
 
   const handleAddCompany = () => {
-    const data = new FormData();
-    data.append("name", newCompany.name);
-    data.append("description", newCompany.description);
-    data.append("image", newCompany.image);
-    dispatch(addNewCompany(data));
-    handleClose("company");
+    const formData = new FormData();
+    formData.append("name", newCompany.name);
+    formData.append("description", newCompany.description);
+    formData.append("image", newCompany.image);
+    dispatch(addNewCompany(formData));
+    setOpenCompany(false);
+    setNewCompany(initialData);
   };
 
   const handleAddCategory = () => {
-    const data = { ...newCategory };
-    dispatch(addNewCategory(data));
-    handleClose("category");
+    const formData = new FormData();
+    formData.append("name", newCategory.name);
+    formData.append("description", newCategory.description);
+    formData.append("image", newCategory.image);
+    dispatch(addNewCategory(formData));
+    setOpenCategory(false);
+    setNewCategory(initialData);
   };
 
   return (
     <>
-      <Container sx={{ pb: 10 }}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          mb={5}
-        >
+      {/* Company Section */}
+      <Container>
+        <Stack direction="row" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Company</Typography>
-
           <Button
             variant="contained"
-            color="inherit"
-            onClick={() => handleOpen("company")}
             startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => setOpenCompany(true)}
           >
             New Company
           </Button>
-          <CustomeModel
-            open={openCompany}
-            addImage={true}
-            data={newCompany}
-            label={{
-              name: "Company name",
-              description: "Description of company",
-            }}
-            handleClose={() => handleClose("company")}
-            handleData={handleChangeCompany}
-            handleImage={handleFileChange}
-            handleAdd={handleAddCompany}
-            isChange={false}
-          />
         </Stack>
-
+        <CustomeModel
+          open={openCompany}
+          addImage
+          data={newCompany}
+          label={{ name: "Company Name", description: "Company Description" }}
+          handleClose={() => setOpenCompany(false)}
+          handleData={(e) =>
+            setNewCompany({ ...newCompany, [e.target.name]: e.target.value })
+          }
+          handleImage={(e) => handleFileChange(e, true)}
+          handleAdd={handleAddCompany}
+        />
         <Card>
-          <UserTableToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
           <Scrollbar>
-            <TableContainer sx={{ overflow: "unset" }}>
-              <Table sx={{ minWidth: 800 }}>
-                <UserTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  rowCount={users.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleSort}
-                  headLabel={[
-                    { id: "name", label: "Name" },
-                    { id: "empty" },
-                    { id: "description", label: "Description" },
-                    { id: "" },
-                  ]}
-                />
-                {companyData && (
-                  <TableBody>
-                    {companyData
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((row) => (
-                        <UserTableRow
-                          key={row._id}
-                          id={row._id}
-                          name={row.name}
-                          descripiton={row.description}
-                          image={row.image}
-                          isCompany={true}
-                        />
-                      ))}
-
-                    {/* <TableEmptyRows
-                    height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                  /> */}
-                  </TableBody>
-                )}
+            <TableContainer>
+              <Table>
+                <UserTableHead headLabel={[{ id: "name", label: "Name" }]} />
+                <TableBody>
+                  {companyData.map((row) => (
+                    <UserTableRow key={row._id} {...row} isCompany />
+                  ))}
+                </TableBody>
               </Table>
             </TableContainer>
           </Scrollbar>
-
-          {companyData && (
-            <TablePagination
-              page={page}
-              component="div"
-              count={companyData.length}
-              rowsPerPage={rowsPerPage}
-              onPageChange={handleChangePage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          )}
         </Card>
       </Container>
 
+      {/* Category Section */}
       <Container>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          mb={5}
-        >
+        <Stack direction="row" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Category</Typography>
-
           <Button
             variant="contained"
-            color="inherit"
-            onClick={() => handleOpen("category")}
             startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => setOpenCategory(true)}
           >
             New Category
           </Button>
-          <CustomeModel
-            open={openCategory}
-            addImage={false}
-            data={newCategory}
-            label={{
-              name: "Category name",
-              description: "Description of category",
-            }}
-            handleClose={() => handleClose("category")}
-            handleData={handleChangeCategory}
-            handleAdd={handleAddCategory}
-            isChange={false}
-          />
         </Stack>
-
+        <CustomeModel
+          open={openCategory}
+          addImage
+          data={newCategory}
+          label={{ name: "Category Name", description: "Category Description" }}
+          handleClose={() => setOpenCategory(false)}
+          handleData={(e) =>
+            setNewCategory({ ...newCategory, [e.target.name]: e.target.value })
+          }
+          handleImage={(e) => handleFileChange(e, false)}
+          handleAdd={handleAddCategory}
+        />
         <Card>
-          <UserTableToolbar
-            numSelected={selected.length}
-            filterName={filterName}
-            onFilterName={handleFilterByName}
-          />
-
           <Scrollbar>
-            <TableContainer sx={{ overflow: "unset" }}>
-              <Table sx={{ minWidth: 800 }}>
-                <UserTableHead
-                  order={order}
-                  orderBy={orderBy}
-                  rowCount={users.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleSort}
-                  headLabel={[
-                    { id: "name", label: "Name" },
-                    { id: "empty" },
-                    { id: "description", label: "Description" },
-                    { id: "" },
-                  ]}
-                />
-                {categoryData && (
-                  <TableBody>
-                    {categoryData
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((row) => (
-                        <UserTableRow
-                          key={row._id}
-                          id={row._id}
-                          name={row.name}
-                          descripiton={row.description}
-                          isCompany={false}
-                        />
-                      ))}
-
-                    {/* <TableEmptyRows
-                    height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                  /> */}
-                  </TableBody>
-                )}
+            <TableContainer>
+              <Table>
+                <UserTableHead headLabel={[{ id: "name", label: "Name" }]} />
+                <TableBody>
+                  {categoryData.map((row) => (
+                    <UserTableRow key={row._id} {...row} isCompany={false} />
+                  ))}
+                </TableBody>
               </Table>
             </TableContainer>
           </Scrollbar>
-
-          {categoryData && (
-            <TablePagination
-              page={page}
-              component="div"
-              count={categoryData.length}
-              rowsPerPage={rowsPerPage}
-              onPageChange={handleChangePage}
-              rowsPerPageOptions={[5, 10, 25]}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          )}
         </Card>
       </Container>
     </>

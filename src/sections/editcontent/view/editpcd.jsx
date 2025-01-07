@@ -65,7 +65,7 @@ export default function UpdatePcd() {
 
   const patchPcd = () => {
     const formData = new FormData();
-    const fields = ["head_pcd", "image_alt_pcd", "faqs"];
+    const fields = ["head_pcd", "text_pcd", "image_alt_pcd", "faqs"];
 
     fields.forEach((field) =>
       formData.append(
@@ -84,7 +84,7 @@ export default function UpdatePcd() {
   return (
     state && (
       <Stack direction="column" spacing={2}>
-        {["head_pcd", "image_alt_pcd"].map((name) => (
+        {["head_pcd", "text_pcd", "image_alt_pcd"].map((name) => (
           <TextField
             key={name}
             name={name}
