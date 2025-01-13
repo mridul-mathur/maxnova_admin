@@ -1,1 +1,0 @@
-import{b0 as e,r as t,j as r,W as s}from"./index-58a65523.js";function n(){return e(),t.useEffect(()=>{console.log()},[]),r.jsx("div",{children:"ibfwonw;fe"})}function c(){return r.jsxs(r.Fragment,{children:[r.jsx(s,{children:r.jsx("title",{children:" Product "})}),r.jsx(n,{})]})}export{c as default};
