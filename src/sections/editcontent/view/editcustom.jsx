@@ -9,7 +9,6 @@ import { getCustomUtil, updateCustomUtil } from "src/redux/actions/utilsAction";
 export default function UpdateCustom() {
   const [state, setState] = useState(null);
   const [step, setStep] = useState({ head: "", text: "" });
-  const [faq, setFaq] = useState({ ques: "", ans: "" });
 
   const dispatch = useDispatch();
   const custom = useSelector((reduxState) => reduxState.utils.customutil);
@@ -43,20 +42,12 @@ export default function UpdateCustom() {
 
   const patchPvt = () => {
     const formData = new FormData();
-    const fields = [
-      "head_custom",
-      "image_alt_custom",
-      "text_custom",
-      "steps",
-      "faqs",
-    ];
+    const fields = ["head_custom", "image_alt_custom", "text_custom", "steps"];
 
     fields.forEach((field) =>
       formData.append(
         field,
-        field === "steps" || field === "faqs"
-          ? JSON.stringify(state[field])
-          : state[field]
+        field === "steps" ? JSON.stringify(state[field]) : state[field]
       )
     );
 
@@ -90,31 +81,6 @@ export default function UpdateCustom() {
       steps: temp,
     }));
     setStep({ head: "", text: "" });
-  };
-
-  const handleChangeFaqs = (e) => {
-    const { name, value } = e.target;
-    setFaq((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleDeleteFaqs = (id) => {
-    const temp = state.faqs.filter((_, i) => i !== id);
-    setState((prev) => ({
-      ...prev,
-      faqs: temp,
-    }));
-  };
-
-  const handleAddFaqs = () => {
-    const temp = [...state.faqs, faq];
-    setState((prev) => ({
-      ...prev,
-      faqs: temp,
-    }));
-    setFaq({ ques: "", ans: "" });
   };
 
   return (
@@ -154,31 +120,7 @@ export default function UpdateCustom() {
             <Typography>
               <b>Text:</b> {stp.text}
             </Typography>
-            <Button onClick={() => handleDeleteSteps(i)}>Remove Steps</Button>
-          </React.Fragment>
-        ))}
-
-        <Typography variant="h6">FAQs</Typography>
-        {["ques", "ans"].map((name) => (
-          <TextField
-            key={name}
-            name={name}
-            value={faq[name]}
-            onChange={handleChangeFaqs}
-            label={name}
-          />
-        ))}
-
-        <Button onClick={handleAddFaqs}>Add FAQ</Button>
-        {state.faqs.map((stp, i) => (
-          <React.Fragment key={i}>
-            <Typography>
-              <b>Question:</b> {stp.ques}
-            </Typography>
-            <Typography>
-              <b>Answer:</b> {stp.ans}
-            </Typography>
-            <Button onClick={() => handleDeleteFaqs(i)}>Remove FAQ</Button>
+            <Button onClick={() => handleDeleteSteps(i)}>Remove</Button>
           </React.Fragment>
         ))}
         <Button variant="contained" onClick={patchPvt}>
