@@ -13,7 +13,7 @@ export function getAllCategory() {
       .then((res) => {
         dispatch({
           type: CATEGORY,
-          payload: res.data,
+          payload: res.data.allCategory,
         });
       })
       .catch((error) => {
@@ -25,10 +25,7 @@ export function getAllCategory() {
 export function addNewCategory(data) {
   return (dispatch) => {
     axios
-      .post("api/category/add", {
-        name: data.name,
-        description: data.description,
-      })
+      .post("api/category/add", data)
       .then((res) => {
         dispatch(getAllCategory());
         dispatch({
@@ -64,10 +61,7 @@ export function deleteCategory(id) {
 export function updateCategory(id, data) {
   return (dispatch) => {
     axios
-      .patch(`api/category/${id}`, {
-        name: data.name,
-        description: data.description,
-      })
+      .patch(`api/category/${id}`, data)
       .then((res) => {
         dispatch(getAllCategory());
         dispatch({

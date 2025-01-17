@@ -42,39 +42,7 @@ export default function UpdateHome() {
     }));
   };
 
-  const handleVerticalChange = (e) => {
-    const { name, value } = e.target;
-    setVertical((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleVerticalImageChange = (e) => {
-    const { files } = e.target;
-    if (!files || files.length === 0) return;
-    setVertical((prev) => ({
-      ...prev,
-      image: files[0],
-    }));
-  };
-
-  const handleAddVertical = () => {
-    const newVerticals = [...(state.verticals || []), vertical];
-    setState((prev) => ({
-      ...prev,
-      verticals: newVerticals,
-    }));
-    setVertical({ head: "", image: null });
-  };
-
-  const handleDeleteVertical = (index) => {
-    const updatedVerticals = state.verticals.filter((_, i) => i !== index);
-    setState((prev) => ({
-      ...prev,
-      verticals: updatedVerticals,
-    }));
-  };
+  
 
   const handleChangeFaqs = (e) => {
     const { name, value } = e.target;
@@ -167,18 +135,6 @@ export default function UpdateHome() {
         formData.append(field, state[field]);
       }
     });
-
-    if (state.verticals) {
-      state.verticals.forEach((vert, index) => {
-        // Append each vertical's head and image separately
-        formData.append(`verticals[${index}][head]`, vert.head);
-
-        // Make sure you're appending the actual file, not a string
-        if (vert.image) {
-          formData.append(`verticals[${index}][image]`, vert.image);
-        }
-      });
-    }
 
     dispatch(updateHomeUtil(state._id, formData));
   };
@@ -278,45 +234,6 @@ export default function UpdateHome() {
             <Button onClick={() => handleDeleteNumbs(i)}>Remove Number</Button>
           </React.Fragment>
         ))}
-
-        <Typography variant="h6">Verticals</Typography>
-        <TextField
-          name="head"
-          value={vertical.head}
-          onChange={handleVerticalChange}
-          label="Vertical Heading"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleVerticalImageChange}
-        />
-        <Button onClick={handleAddVertical}>Add Vertical</Button>
-
-        {state.verticals?.map((vert, index) => (
-          <React.Fragment key={index}>
-            <Typography>
-              <b>Heading:</b> {vert.head}
-            </Typography>
-            {vert.image && (
-              <img
-                onChange={handleFileChange}
-                src={
-                  typeof vert.image === "string"
-                    ? vert.image
-                    : URL.createObjectURL(vert.image)
-                }
-                alt="Vertical"
-                height="100px"
-                width="100px"
-              />
-            )}
-            <Button onClick={() => handleDeleteVertical(index)}>
-              Remove Vertical
-            </Button>
-          </React.Fragment>
-        ))}
-
         <Button variant="contained" onClick={patchHome}>
           Update Home Page
         </Button>

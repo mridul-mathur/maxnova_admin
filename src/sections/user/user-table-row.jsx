@@ -1,22 +1,23 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from "react";
+import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
 
-import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
-import MenuItem from '@mui/material/MenuItem';
-import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import Popover from "@mui/material/Popover";
+import TableRow from "@mui/material/TableRow";
+import MenuItem from "@mui/material/MenuItem";
+import TableCell from "@mui/material/TableCell";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
-import Label from 'src/components/label';
-import Iconify from 'src/components/iconify';
-import CustomeModel from './model/model';
-import { useDispatch } from 'react-redux';
-import { deleteCompany, updateCompany } from 'src/redux/actions/companyAction';
-import { deleteCategory, updateCategory } from 'src/redux/actions/categoryAction';
+import { deleteCompany, updateCompany } from "src/redux/actions/companyAction";
+import {
+  deleteCategory,
+  updateCategory,
+} from "src/redux/actions/categoryAction";
+
+import Iconify from "src/components/iconify";
+
+import CustomeModel from "./model/model";
 
 // ----------------------------------------------------------------------
 
@@ -28,106 +29,78 @@ export default function UserTableRow({
   isCompany,
   image,
 }) {
-
   const dispatch = useDispatch();
 
-  const [open, setOpen] = useState(null);
-
+  const [menuAnchor, setMenuAnchor] = useState(null);
   const [modelOpen, setModelOpen] = useState(false);
 
+  const initialData = {
+    name,
+    description: descripiton,
+    image,
+  };
+
+  const [formData, setFormData] = useState(initialData);
+
   const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+    setMenuAnchor(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
-    setOpen(null);
+    setMenuAnchor(null);
   };
 
-  const initialCompanyData = {
-    name: name,
-    description: descripiton,
-    image: image
-  }
+  const handleOpenModel = () => {
+    setModelOpen(true);
+    handleCloseMenu();
+  };
 
-  const initialCategoryData = {
-    name: name,
-    description: descripiton,
-  }
+  const handleCloseModel = () => {
+    setModelOpen(false);
+    setFormData(initialData);
+  };
 
-  const [companyData, setCompanyData] = useState({
-    name: name,
-    description: descripiton,
-    image: image
-  })
-
-  const [categoryData, setCategoryData] = useState({
-    name: name,
-    description: descripiton,
-  })
-
-  const handleChangeData = (event) => {
-    const { value } = event.target
-    if (isCompany) {
-      setCompanyData((prev) => ({
-        ...prev,
-        [event.target.name]: value
-      }))
-    } else {
-      setCategoryData((prev) => ({
-        ...prev,
-        [event.target.name]: value
-      }))
-    }
-  }
-
-  const handleOpen = () => {
-    setModelOpen(true)
-  }
-
-  const handleClose = () => {
-    handleCloseMenu()
-    setModelOpen(false)
-    if(isCompany){
-      setCompanyData(initialCompanyData)
-    }else{
-      setCategoryData(initialCategoryData)
-    }
-  }
-
-  const handleDelete = () => {
-    if (isCompany) {
-      dispatch(deleteCompany(id))
-    } else {
-      dispatch(deleteCategory(id))
-    }
-  }
-
-  const handleEdit = () => {
-    if (isCompany) {
-      const data = new FormData();
-      data.append('name', companyData.name)
-      data.append('description', companyData.description)
-      if(typeof companyData.image !== "string"){
-        data.append('image', companyData.image)
-      }
-      dispatch(updateCompany(id, data))
-    } else {
-      dispatch(updateCategory(id, categoryData))
-    }
-    handleClose()
-  }
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    if (!file) return;
+    setFormData((prev) => ({
+      ...prev,
+      image: file,
+    }));
+  };
 
-    if (!file) {
-      return;
+  const handleDelete = () => {
+    if (isCompany) {
+      dispatch(deleteCompany(id));
+    } else {
+      dispatch(deleteCategory(id));
+    }
+    handleCloseMenu();
+  };
+
+  const handleEdit = () => {
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("description", formData.description);
+    if (typeof formData.image !== "string") {
+      data.append("image", formData.image);
     }
 
-    setCompanyData((prev) => ({
-      ...prev,
-      image: file
-    }));
+    if (isCompany) {
+      dispatch(updateCompany(id, data));
+    } else {
+      dispatch(updateCategory(id, data));
+    }
+
+    handleCloseModel();
   };
 
   return (
@@ -139,9 +112,6 @@ export default function UserTableRow({
           </Typography>
         </TableCell>
 
-        <TableCell></TableCell>
-
-
         <TableCell>{descripiton}</TableCell>
 
         <TableCell align="right">
@@ -151,50 +121,53 @@ export default function UserTableRow({
         </TableCell>
       </TableRow>
 
+      {/* Popover Menu */}
       <Popover
-        open={!!open}
-        anchorEl={open}
+        open={!!menuAnchor}
+        anchorEl={menuAnchor}
         onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleOpen}>
+        <MenuItem onClick={handleOpenModel}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <CustomeModel
-          open={modelOpen}
-          addImage={isCompany ? true : false}
-          data={isCompany ? companyData : categoryData}
-          label={{
-            name: isCompany ? "Company name" : "Category name",
-            description: isCompany ? "Description of company" : "Description of category"
-          }}
-          handleClose={handleClose}
-          handleData={handleChangeData}
-          handleImage={handleFileChange}
-          handleAdd={handleEdit}
-          isChange={true}
-        />
-        <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleDelete} sx={{ color: "error.main" }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
+
+      {/* Modal for Edit */}
+      <CustomeModel
+        open={modelOpen}
+        addImage
+        data={formData}
+        label={{
+          name: isCompany ? "Company name" : "Category name",
+          description: isCompany
+            ? "Description of company"
+            : "Description of category",
+        }}
+        handleClose={handleCloseModel}
+        handleData={handleInputChange}
+        handleImage={handleFileChange}
+        handleAdd={handleEdit}
+        isChange
+      />
     </>
   );
 }
 
 UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  company: PropTypes.any,
-  handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
-  name: PropTypes.any,
-  role: PropTypes.any,
-  selected: PropTypes.any,
-  status: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  descripiton: PropTypes.string.isRequired,
+  isCompany: PropTypes.bool.isRequired,
+  image: PropTypes.any,
+  selected: PropTypes.bool,
 };

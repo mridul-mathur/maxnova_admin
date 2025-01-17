@@ -1,11 +1,6 @@
-import { useState, forwardRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewCompany, getAllCompany } from "src/redux/actions/companyAction";
-import {
-  addNewCategory,
-  getAllCategory,
-} from "src/redux/actions/categoryAction";
-import PropTypes from "prop-types";
+
 import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -15,18 +10,21 @@ import TableBody from "@mui/material/TableBody";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
-import { TextField, Box } from "@mui/material";
 
 import { users } from "src/_mock/user";
+import { addNewCompany, getAllCompany } from "src/redux/actions/companyAction";
+import {
+  addNewCategory,
+  getAllCategory,
+} from "src/redux/actions/categoryAction";
+
 import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
+
 import CustomeModel from "../model/model";
-import TableNoData from "../table-no-data";
 import UserTableRow from "../user-table-row";
 import UserTableHead from "../user-table-head";
-import TableEmptyRows from "../table-empty-rows";
 import UserTableToolbar from "../user-table-toolbar";
-import { emptyRows, applyFilter, getComparator } from "../utils";
 
 // ----------------------------------------------------------------------
 
@@ -39,13 +37,12 @@ const initialCompanyData = {
 const initialCategoryData = {
   name: "",
   description: "",
+  image: null,
 };
 
-export default function UserPage() {
+export default function ComapanyCategoryPage() {
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState("asc");
-
   const [selected, setSelected] = useState([]);
 
   const dispatch = useDispatch();
@@ -60,8 +57,12 @@ export default function UserPage() {
 
   useEffect(() => {
     dispatch(getAllCompany());
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Dispatching getAllCategory");
     dispatch(getAllCategory());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (allcompany) {
@@ -98,6 +99,7 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [openCompany, setOpenCompany] = useState(false);
+
   const [openCategory, setOpenCategory] = useState(false);
 
   const handleOpen = (name) => {
@@ -118,14 +120,6 @@ export default function UserPage() {
     }
   };
 
-  const handleSort = (event, id) => {
-    const isAsc = orderBy === id && order === "asc";
-    if (id !== "") {
-      setOrder(isAsc ? "desc" : "asc");
-      setOrderBy(id);
-    }
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -140,20 +134,24 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  // const dataFiltered = applyFilter({
-  //   inputData: companyData,
-  //   comparator: getComparator(order, orderBy),
-  //   filterName,
-  // });
-
-  const handleFileChange = (event) => {
+  const handleFileChangeCompany = (event) => {
     const file = event.target.files[0];
 
     if (!file) {
       return;
     }
-
     setNewCompany((prev) => ({
+      ...prev,
+      image: file,
+    }));
+  };
+
+  const handleFileChangeCategory = (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+    setNewCategory((prev) => ({
       ...prev,
       image: file,
     }));
@@ -169,11 +167,16 @@ export default function UserPage() {
   };
 
   const handleAddCategory = () => {
-    const data = { ...newCategory };
+    const data = new FormData();
+    data.append("name", newCategory.name);
+    data.append("description", newCategory.description);
+    data.append("image", newCategory.image);
     dispatch(addNewCategory(data));
     handleClose("category");
   };
 
+  console.log("companyData", companyData);
+  console.log("categoryData", categoryData);
   return (
     <>
       <Container sx={{ pb: 10 }}>
@@ -195,7 +198,7 @@ export default function UserPage() {
           </Button>
           <CustomeModel
             open={openCompany}
-            addImage={true}
+            addImage
             data={newCompany}
             label={{
               name: "Company name",
@@ -203,7 +206,7 @@ export default function UserPage() {
             }}
             handleClose={() => handleClose("company")}
             handleData={handleChangeCompany}
-            handleImage={handleFileChange}
+            handleImage={handleFileChangeCompany}
             handleAdd={handleAddCompany}
             isChange={false}
           />
@@ -224,7 +227,6 @@ export default function UserPage() {
                   orderBy={orderBy}
                   rowCount={users.length}
                   numSelected={selected.length}
-                  onRequestSort={handleSort}
                   headLabel={[
                     { id: "name", label: "Name" },
                     { id: "empty" },
@@ -246,14 +248,9 @@ export default function UserPage() {
                           name={row.name}
                           descripiton={row.description}
                           image={row.image}
-                          isCompany={true}
+                          isCompany
                         />
                       ))}
-
-                    {/* <TableEmptyRows
-                    height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                  /> */}
                   </TableBody>
                 )}
               </Table>
@@ -274,7 +271,7 @@ export default function UserPage() {
         </Card>
       </Container>
 
-      <Container>
+      <Container sx={{ pb: 10 }}>
         <Stack
           direction="row"
           alignItems="center"
@@ -293,7 +290,7 @@ export default function UserPage() {
           </Button>
           <CustomeModel
             open={openCategory}
-            addImage={false}
+            addImage
             data={newCategory}
             label={{
               name: "Category name",
@@ -301,6 +298,7 @@ export default function UserPage() {
             }}
             handleClose={() => handleClose("category")}
             handleData={handleChangeCategory}
+            handleImage={handleFileChangeCategory}
             handleAdd={handleAddCategory}
             isChange={false}
           />
@@ -321,7 +319,6 @@ export default function UserPage() {
                   orderBy={orderBy}
                   rowCount={users.length}
                   numSelected={selected.length}
-                  onRequestSort={handleSort}
                   headLabel={[
                     { id: "name", label: "Name" },
                     { id: "empty" },
@@ -342,14 +339,10 @@ export default function UserPage() {
                           id={row._id}
                           name={row.name}
                           descripiton={row.description}
-                          isCompany={false}
+                          image={row.image}
+                          isCategory
                         />
                       ))}
-
-                    {/* <TableEmptyRows
-                    height={77}
-                    emptyRows={emptyRows(page, rowsPerPage, users.length)}
-                  /> */}
                   </TableBody>
                 )}
               </Table>
