@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Stack } from "@mui/system";
-import { Button, TextField, Typography } from "@mui/material";
+import { Box, Grid, Stack, Button, TextField, Typography } from "@mui/material";
 
 import { getHomeUtil, updateHomeUtil } from "src/redux/actions/utilsAction";
 
@@ -10,7 +9,6 @@ export default function UpdateHome() {
   const [state, setState] = useState(null);
   const [faq, setFaq] = useState({ ques: "", ans: "" });
   const [numb, setNumb] = useState({ numb: 0, head: "" });
-  const [vertical, setVertical] = useState({ head: "", image: null });
 
   const dispatch = useDispatch();
   const home = useSelector((reduxState) => reduxState.utils.homeutil);
@@ -41,8 +39,6 @@ export default function UpdateHome() {
       [name]: files[0],
     }));
   };
-
-  
 
   const handleChangeFaqs = (e) => {
     const { name, value } = e.target;
@@ -116,6 +112,7 @@ export default function UpdateHome() {
       "faqs",
       "numbs",
     ];
+
     fields.forEach((field) =>
       formData.append(
         field,
@@ -124,6 +121,7 @@ export default function UpdateHome() {
           : state[field]
       )
     );
+
     [
       "image_about1",
       "image_about2",
@@ -141,100 +139,236 @@ export default function UpdateHome() {
 
   return (
     state && (
-      <Stack direction="column" spacing={2}>
-        {[
-          { name: "head_hero", label: "head_hero" },
-          { name: "subhead_about", label: "subhead_about" },
-          { name: "text_about", label: "text_about" },
-          { name: "image_alt_about1", label: "image_alt_about1" },
-          { name: "image_alt_about2", label: "image_alt_about2" },
-          { name: "subhead_quality", label: "subhead_quality" },
-          { name: "text_quality", label: "text_quality" },
-          { name: "image_alt_quality", label: "image_alt_quality" },
-          { name: "head_whyus", label: "head_whyus" },
-          { name: "text1_whyus", label: "text1_whyus" },
-          { name: "text2_whyus", label: "text2_whyus" },
-          { name: "text_3_whyus", label: "text_3_whyus" },
-          { name: "image_alt_3_whyus", label: "image_alt_3_whyus" },
-          { name: "text_4_whyus", label: "text_4_whyus" },
-          { name: "image_alt_4_whyus", label: "image_alt_4_whyus" },
-          { name: "whylist_whyus", label: "whylist_whyus" },
-        ].map(({ name, label }) => (
-          <TextField
-            key={name}
-            name={name}
-            value={state[name] || ""}
-            onChange={handleChange}
-            label={label}
-          />
-        ))}
-        {[
-          { name: "image_about1", src: state.image_about1 },
-          { name: "image_about2", src: state.image_about2 },
-          { name: "image_quality", src: state.image_quality },
-          { name: "image_3_whyus", src: state.image_3_whyus },
-          { name: "image_4_whyus", src: state.image_4_whyus },
-        ].map(({ name, src }) => (
-          <React.Fragment key={name}>
-            <Typography variant="h5">{name}</Typography>
-            <img src={src} alt="" height="100px" width="100px" />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              name={name}
+      <Stack direction="column" spacing={4}>
+        <Grid container spacing={2}>
+          {[
+            "head_hero",
+            "subhead_about",
+            "text_about",
+            "subhead_quality",
+            "text_quality",
+            "head_whyus",
+            "text1_whyus",
+            "text2_whyus",
+            "text_3_whyus",
+            "text_4_whyus",
+          ].map((name) => (
+            <Grid item md={6} key={name}>
+              <TextField
+                fullWidth
+                name={name}
+                value={state[name] || ""}
+                onChange={handleChange}
+                label={name}
+                variant="outlined"
+              />
+            </Grid>
+          ))}
+          <Grid item md={12}>
+            <TextField
+              fullWidth
+              name="whylist_whyus"
+              value={state.whylist_whyus || ""}
+              onChange={handleChange}
+              label="whylist_whyus (Coma separated list)"
+              variant="outlined"
             />
-          </React.Fragment>
-        ))}
-
+          </Grid>
+        </Grid>
+        <Typography variant="h6">Images</Typography>
+        <Grid container spacing={2}>
+          {[
+            {
+              name: "image_about1",
+              src: state.image_about1,
+              alt: state.image_alt_about1,
+            },
+            {
+              name: "image_about2",
+              src: state.image_about2,
+              alt: state.image_alt_about2,
+            },
+            {
+              name: "image_quality",
+              src: state.image_quality,
+              alt: state.image_alt_quality,
+            },
+            {
+              name: "image_3_whyus",
+              src: state.image_3_whyus,
+              alt: state.image_alt_3_whyus,
+            },
+            {
+              name: "image_4_whyus",
+              src: state.image_4_whyus,
+              alt: state.image_alt_4_whyus,
+            },
+          ].map(({ name, src, alt }) => (
+            <Grid item xs={12} md={6} key={name} sx={{ textAlign: "center" }}>
+              <img
+                src={src}
+                alt={alt || name}
+                height="100px"
+                style={{
+                  width: "auto",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  marginTop: "1em",
+                  marginBottom: "1em",
+                }}
+              />
+              <TextField
+                fullWidth
+                name={`image_alt_${name}`}
+                value={alt || ""}
+                onChange={handleChange}
+                label="Image Alt Text"
+                variant="outlined"
+                sx={{ my: 1 }}
+              />
+              <Button
+                size="medium"
+                variant="outlined"
+                component="label"
+                sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+              >
+                Upload {name}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  name={name}
+                  hidden
+                />
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
         <Typography variant="h6">FAQs</Typography>
-        {["ques", "ans"].map((name) => (
-          <TextField
-            key={name}
-            name={name}
-            value={faq[name]}
-            onChange={handleChangeFaqs}
-            label={name}
-          />
-        ))}
-
-        <Button onClick={handleAddFaqs}>Add FAQ</Button>
-        {state.faqs.map((stp, i) => (
-          <React.Fragment key={i}>
-            <Typography>
-              <b>Question:</b> {stp.ques}
-            </Typography>
-            <Typography>
-              <b>Answer:</b> {stp.ans}
-            </Typography>
-            <Button onClick={() => handleDeleteFaqs(i)}>Remove FAQ</Button>
-          </React.Fragment>
-        ))}
+        <Grid container spacing={2}>
+          {["ques", "ans"].map((name) => (
+            <Grid item xs={12} md={6} key={name}>
+              <TextField
+                fullWidth
+                name={name}
+                value={faq[name] || ""}
+                onChange={handleChangeFaqs}
+                label={name}
+                variant="outlined"
+              />
+            </Grid>
+          ))}
+        </Grid>
+        <Button
+          size="medium"
+          variant="outlined"
+          component="label"
+          sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+          onClick={handleAddFaqs}
+        >
+          Add FAQ
+        </Button>
+        <Box>
+          {state.faqs.map((stp, i) => (
+            <Box
+              key={i}
+              sx={{
+                marginBottom: 2,
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                paddingX: 2,
+                paddingY: 1,
+              }}
+            >
+              <Typography sx={{ my: 1 }}>
+                <b>Question:</b> {stp.ques}
+              </Typography>
+              <Typography sx={{ my: 1 }}>
+                <b>Answer:</b> {stp.ans}
+              </Typography>
+              <Button
+                size="medium"
+                variant="outlined"
+                component="label"
+                sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+                color="error"
+                onClick={() => handleDeleteFaqs(i)}
+              >
+                Remove FAQ
+              </Button>
+            </Box>
+          ))}
+        </Box>
 
         <Typography variant="h6">Numbers</Typography>
-        {["numb", "head"].map((name) => (
-          <TextField
-            key={name}
-            name={name}
-            value={numb[name]}
-            onChange={handleChangeNumbs}
-            label={name}
-          />
-        ))}
+        <Grid container spacing={2}>
+          {["numb", "head"].map((name) => (
+            <Grid item xs={12} md={6} key={name}>
+              {name === "numb" ? (
+                <TextField
+                  fullWidth
+                  name={name}
+                  value={numb[name] || 0}
+                  onChange={handleChangeNumbs}
+                  label={name}
+                  variant="outlined"
+                  type="number"
+                />
+              ) : (
+                <TextField
+                  fullWidth
+                  name={name}
+                  value={numb[name] || ""}
+                  onChange={handleChangeNumbs}
+                  label={name}
+                  variant="outlined"
+                />
+              )}
+            </Grid>
+          ))}
+        </Grid>
+        <Button
+          size="medium"
+          variant="outlined"
+          component="label"
+          sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+          onClick={handleAddNumbs}
+        >
+          Add Number
+        </Button>
+        <Box>
+          {state.numbs.map((stp, i) => (
+            <Box
+              key={i}
+              sx={{
+                marginBottom: 2,
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                paddingX: 2,
+                paddingY: 1,
+              }}
+            >
+              <Typography sx={{ my: 1 }}>
+                <b>Number:</b> {stp.numb}
+              </Typography>
+              <Typography sx={{ my: 1 }}>
+                <b>Heading:</b> {stp.head}
+              </Typography>
+              <Button
+                size="medium"
+                variant="outlined"
+                component="label"
+                sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+                onClick={() => handleDeleteNumbs(i)}
+                color="error"
+              >
+                Remove Number
+              </Button>
+            </Box>
+          ))}
+        </Box>
 
-        <Button onClick={handleAddNumbs}>Add Number</Button>
-        {state.numbs.map((stp, i) => (
-          <React.Fragment key={i}>
-            <Typography>
-              <b>Number:</b> {stp.numb}
-            </Typography>
-            <Typography>
-              <b>Heading:</b> {stp.head}
-            </Typography>
-            <Button onClick={() => handleDeleteNumbs(i)}>Remove Number</Button>
-          </React.Fragment>
-        ))}
-        <Button variant="contained" onClick={patchHome}>
+        <Button size="medium" variant="contained" onClick={patchHome}>
           Update Home Page
         </Button>
       </Stack>

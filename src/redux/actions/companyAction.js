@@ -17,7 +17,10 @@ export function getAllCompany() {
         });
       })
       .catch((error) => {
-        dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));
+        const errorMsg =
+          error.response?.data?.errors?.[0]?.msg ||
+          "Failed to fetch companies.";
+        dispatch(showSnackBar(errorMsg, "error"));
       });
   };
 }
@@ -25,7 +28,11 @@ export function getAllCompany() {
 export function addNewCompany(data) {
   return (dispatch) => {
     axios
-      .post("api/company/add", data)
+      .post("api/company/add", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then((res) => {
         dispatch(getAllCompany());
         dispatch({
@@ -35,7 +42,13 @@ export function addNewCompany(data) {
         dispatch(showSnackBar("Added New Company Successfully!", "success"));
       })
       .catch((error) => {
-        dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));
+        console.error("Error in addNewCompany:", error);
+        dispatch(
+          showSnackBar(
+            error.response?.data?.message || "Failed to add company",
+            "error"
+          )
+        );
       });
   };
 }
@@ -53,7 +66,9 @@ export function deleteCompany(id) {
         dispatch(showSnackBar("Deleted Company Successfully!", "success"));
       })
       .catch((error) => {
-        dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));
+        const errorMsg =
+          error.response?.data?.errors?.[0]?.msg || "Failed to delete company.";
+        dispatch(showSnackBar(errorMsg, "error"));
       });
   };
 }
@@ -61,7 +76,11 @@ export function deleteCompany(id) {
 export function updateCompany(id, data) {
   return (dispatch) => {
     axios
-      .patch(`api/company/${id}`, data)
+      .patch(`api/company/${id}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Ensure proper headers for file upload
+        },
+      })
       .then((res) => {
         dispatch(getAllCompany());
         dispatch({
@@ -71,7 +90,9 @@ export function updateCompany(id, data) {
         dispatch(showSnackBar("Updated Company Successfully!", "success"));
       })
       .catch((error) => {
-        dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));
+        const errorMsg =
+          error.response?.data?.errors?.[0]?.msg || "Failed to update company.";
+        dispatch(showSnackBar(errorMsg, "error"));
       });
   };
 }

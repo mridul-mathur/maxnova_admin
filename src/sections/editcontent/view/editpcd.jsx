@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Stack } from "@mui/system";
-import { Button, TextField } from "@mui/material";
+import { Box, Grid, Stack, Button, TextField, Typography } from "@mui/material";
 
 import { getPcdUtil, updatePcdUtil } from "src/redux/actions/utilsAction";
 
@@ -40,7 +39,7 @@ export default function UpdatePcd() {
 
   const patchPcd = () => {
     const formData = new FormData();
-    const fields = ["head_pcd", "image_alt_pcd"];
+    const fields = ["head_pcd", "text_pcd", "slogan", "image_alt_pcd"];
 
     fields.forEach((field) => formData.append(field, state[field]));
 
@@ -53,25 +52,70 @@ export default function UpdatePcd() {
 
   return (
     state && (
-      <Stack direction="column" spacing={2}>
-        {["head_pcd", "image_alt_pcd"].map((name) => (
-          <TextField
-            key={name}
-            name={name}
-            value={state[name]}
-            onChange={handleChange}
-            label={name}
-          />
-        ))}
-        <img src={state.image_pcd} alt="" height="100px" width="100px" />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          name="image_pcd"
-        />
-        <Button variant="contained" onClick={patchPcd}>
-          Update
+      <Stack direction="column" spacing={4}>
+        <Typography variant="h5" sx={{ textAlign: "center" }}>
+          Update PCD Details
+        </Typography>
+
+        <Grid container spacing={2}>
+          {["head_pcd", "text_pcd", "slogan"].map((name) => (
+            <Grid item xs={12} md={6} key={name}>
+              <TextField
+                fullWidth
+                name={name}
+                value={state[name] || ""}
+                onChange={handleChange}
+                label={name.replace("_", " ").toUpperCase()}
+                variant="outlined"
+              />
+            </Grid>
+          ))}
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ textAlign: "center", gap: 2 }}>
+              <Typography variant="h6" sx={{ my: 1, textAlign: "left" }}>
+                PCD Image
+              </Typography>
+              <img
+                src={state.image_pcd}
+                alt={state.image_alt_pcd || "PCD Image"}
+                height="100px"
+                style={{
+                  borderRadius: "8px",
+                  marginTop: "1em",
+                  marginBottom: "1em",
+                }}
+              />
+              <TextField
+                fullWidth
+                name="image_alt_pcd"
+                value={state.image_alt_pcd || ""}
+                onChange={handleChange}
+                label="Image Alt Text"
+                variant="outlined"
+                sx={{ my: 1 }}
+              />
+              <Button
+                size="medium"
+                variant="outlined"
+                component="label"
+                sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+              >
+                Upload image_pcd
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  name="image_pcd"
+                  hidden
+                />
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+        <Button size="medium" variant="contained" onClick={patchPcd}>
+          Update PCD
         </Button>
       </Stack>
     )

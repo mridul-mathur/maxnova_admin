@@ -229,6 +229,7 @@ export default function ShopProductCard({
                     updateState.image && (
                       <img
                         src={updateState.image}
+                        alt="ima"
                         width="250px"
                         height="250px"
                       />
@@ -237,6 +238,7 @@ export default function ShopProductCard({
                     updateState.image && (
                       <img
                         src={URL.createObjectURL(updateState.image)}
+                        alt="ima"
                         width="250px"
                         height="250px"
                       />

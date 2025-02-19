@@ -42,7 +42,7 @@ export default function UpdatePvt() {
 
   const patchPvt = () => {
     const formData = new FormData();
-    const fields = ["head_pvt", "image_alt_pvt", "text_pvt", "steps"];
+    const fields = ["head_pvt", "image_alt_pvt", "text_pvt", "slogan", "steps"];
 
     fields.forEach((field) =>
       formData.append(
@@ -86,7 +86,7 @@ export default function UpdatePvt() {
   return (
     state && (
       <Stack direction="column" spacing={2}>
-        {["head_pvt", "text_pvt", "image_alt_pvt"].map((name) => (
+        {["head_pvt", "text_pvt", "slogan", "image_alt_pvt"].map((name) => (
           <TextField
             key={name}
             name={name}

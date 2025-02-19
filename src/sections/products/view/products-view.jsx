@@ -151,21 +151,6 @@ export default function ProductsView() {
     if (!file) {
       return;
     }
-
-    // File type validation
-    // if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-    //     setError("Invalid file type. Please upload a JPEG, PNG, or GIF image.");
-    //     return;
-    // }
-
-    // // File size validation
-    // if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-    //     setError(
-    //         `File size exceeds ${MAX_FILE_SIZE_MB} MB. Please choose a smaller file.`
-    //     );
-    //     return;
-    // }
-
     setAddProduct((prev) => ({
       ...prev,
       image: file,

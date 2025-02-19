@@ -20,10 +20,17 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: "white",
+          mt: 15,
+          background: "#ffffff",
+
+          borderRadius: "1rem",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
           Home Utils
         </Typography>
         <UpdateHome />
@@ -32,10 +39,16 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: "white",
+          background: "#ffffff",
+          mt: 15,
+          borderRadius: "1rem",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
           About Utils
         </Typography>
         <UpdateAbout />
@@ -44,10 +57,16 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: "white",
+          background: "#ffffff",
+          mt: 15,
+          borderRadius: "1rem",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
           Certificates Utils
         </Typography>
         <UpdateCertificates />
@@ -56,10 +75,16 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: "white",
+          background: "#ffffff",
+          mt: 15,
+          borderRadius: "1rem",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
           PCD Utils
         </Typography>
         <UpdatePcd />
@@ -68,10 +93,16 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: "white",
+          background: "#ffffff",
+          mt: 15,
+          borderRadius: "1rem",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
           PVT Utils
         </Typography>
         <UpdatePvt />
@@ -80,10 +111,16 @@ export default function EditContent() {
       <Box
         sx={{
           p: 5,
-          background: "white",
+          background: "#ffffff",
+          mt: 15,
+          borderRadius: "1rem",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", pb: 3 }}>
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
           Custom Formulation Utils
         </Typography>
         <UpdateCustom />

@@ -22,8 +22,9 @@ import Iconify from "src/components/iconify";
 import Scrollbar from "src/components/scrollbar";
 
 import CustomeModel from "../model/model";
-import UserTableRow from "../user-table-row";
 import UserTableHead from "../user-table-head";
+import UserTableRowCompany from "../company-row";
+import UserTableRowCategory from "../category-row";
 import UserTableToolbar from "../user-table-toolbar";
 
 // ----------------------------------------------------------------------
@@ -32,6 +33,7 @@ const initialCompanyData = {
   name: "",
   description: "",
   image: null,
+  catalog: null,
 };
 
 const initialCategoryData = {
@@ -60,7 +62,6 @@ export default function ComapanyCategoryPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("Dispatching getAllCategory");
     dispatch(getAllCategory());
   }, [dispatch]);
 
@@ -77,18 +78,18 @@ export default function ComapanyCategoryPage() {
   }, [allcategory]);
 
   const handleChangeCompany = (event) => {
-    const { value } = event.target;
+    const { name, value } = event.target;
     setNewCompany((prev) => ({
       ...prev,
-      [event.target.name]: value,
+      [name]: value,
     }));
   };
 
   const handleChangeCategory = (event) => {
-    const { value } = event.target;
+    const { name, value } = event.target;
     setNewCategory((prev) => ({
       ...prev,
-      [event.target.name]: value,
+      [name]: value,
     }));
   };
 
@@ -113,7 +114,7 @@ export default function ComapanyCategoryPage() {
   const handleClose = (name) => {
     if (name === "company") {
       setOpenCompany(false);
-      setNewCategory(initialCompanyData);
+      setNewCompany(initialCompanyData);
     } else {
       setOpenCategory(false);
       setNewCategory(initialCategoryData);
@@ -134,27 +135,34 @@ export default function ComapanyCategoryPage() {
     setFilterName(event.target.value);
   };
 
-  const handleFileChangeCompany = (event) => {
+  const handleImageChangeCompany = (event) => {
     const file = event.target.files[0];
-
-    if (!file) {
-      return;
+    if (file) {
+      setNewCompany((prev) => ({
+        ...prev,
+        image: file,
+      }));
     }
-    setNewCompany((prev) => ({
-      ...prev,
-      image: file,
-    }));
   };
 
-  const handleFileChangeCategory = (event) => {
+  const handleCatelogChangeCompany = (event) => {
     const file = event.target.files[0];
-    if (!file) {
-      return;
+    if (file) {
+      setNewCompany((prev) => ({
+        ...prev,
+        catalog: file,
+      }));
     }
-    setNewCategory((prev) => ({
-      ...prev,
-      image: file,
-    }));
+  };
+
+  const handleImageChangeCategory = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setNewCategory((prev) => ({
+        ...prev,
+        image: file,
+      }));
+    }
   };
 
   const handleAddCompany = () => {
@@ -162,6 +170,7 @@ export default function ComapanyCategoryPage() {
     data.append("name", newCompany.name);
     data.append("description", newCompany.description);
     data.append("image", newCompany.image);
+    data.append("catalog", newCompany.catalog);
     dispatch(addNewCompany(data));
     handleClose("company");
   };
@@ -175,10 +184,9 @@ export default function ComapanyCategoryPage() {
     handleClose("category");
   };
 
-  console.log("companyData", companyData);
-  console.log("categoryData", categoryData);
   return (
     <>
+      {/* Company Section */}
       <Container sx={{ pb: 10 }}>
         <Stack
           direction="row"
@@ -187,7 +195,6 @@ export default function ComapanyCategoryPage() {
           mb={5}
         >
           <Typography variant="h4">Company</Typography>
-
           <Button
             variant="contained"
             color="inherit"
@@ -196,29 +203,24 @@ export default function ComapanyCategoryPage() {
           >
             New Company
           </Button>
-          <CustomeModel
-            open={openCompany}
-            addImage
-            data={newCompany}
-            label={{
-              name: "Company name",
-              description: "Description of company",
-            }}
-            handleClose={() => handleClose("company")}
-            handleData={handleChangeCompany}
-            handleImage={handleFileChangeCompany}
-            handleAdd={handleAddCompany}
-            isChange={false}
-          />
         </Stack>
-
+        <CustomeModel
+          open={openCompany}
+          data={newCompany}
+          label={{ name: "Company Name", description: "Company Description" }}
+          handleClose={() => handleClose("company")}
+          handleData={handleChangeCompany}
+          handleImage={handleImageChangeCompany}
+          handleCatelog={handleCatelogChangeCompany}
+          handleAdd={handleAddCompany}
+          isChange={false}
+        />
         <Card>
           <UserTableToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
           />
-
           <Scrollbar>
             <TableContainer sx={{ overflow: "unset" }}>
               <Table sx={{ minWidth: 800 }}>
@@ -229,9 +231,7 @@ export default function ComapanyCategoryPage() {
                   numSelected={selected.length}
                   headLabel={[
                     { id: "name", label: "Name" },
-                    { id: "empty" },
                     { id: "description", label: "Description" },
-                    { id: "" },
                   ]}
                 />
                 {companyData && (
@@ -242,11 +242,11 @@ export default function ComapanyCategoryPage() {
                         page * rowsPerPage + rowsPerPage
                       )
                       .map((row) => (
-                        <UserTableRow
+                        <UserTableRowCompany
                           key={row._id}
                           id={row._id}
                           name={row.name}
-                          descripiton={row.description}
+                          description={row.description}
                           image={row.image}
                           isCompany
                         />
@@ -256,7 +256,6 @@ export default function ComapanyCategoryPage() {
               </Table>
             </TableContainer>
           </Scrollbar>
-
           {companyData && (
             <TablePagination
               page={page}
@@ -270,7 +269,6 @@ export default function ComapanyCategoryPage() {
           )}
         </Card>
       </Container>
-
       <Container sx={{ pb: 10 }}>
         <Stack
           direction="row"
@@ -279,7 +277,6 @@ export default function ComapanyCategoryPage() {
           mb={5}
         >
           <Typography variant="h4">Category</Typography>
-
           <Button
             variant="contained"
             color="inherit"
@@ -288,29 +285,25 @@ export default function ComapanyCategoryPage() {
           >
             New Category
           </Button>
-          <CustomeModel
-            open={openCategory}
-            addImage
-            data={newCategory}
-            label={{
-              name: "Category name",
-              description: "Description of category",
-            }}
-            handleClose={() => handleClose("category")}
-            handleData={handleChangeCategory}
-            handleImage={handleFileChangeCategory}
-            handleAdd={handleAddCategory}
-            isChange={false}
-          />
         </Stack>
-
+        <CustomeModel
+          addCatalog={false}
+          open={openCategory}
+          addImage
+          data={newCategory}
+          label={{ name: "Category Name", description: "Category Description" }}
+          handleClose={() => handleClose("category")}
+          handleData={handleChangeCategory}
+          handleImage={handleImageChangeCategory}
+          handleAdd={handleAddCategory}
+          isChange={false}
+        />
         <Card>
           <UserTableToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
           />
-
           <Scrollbar>
             <TableContainer sx={{ overflow: "unset" }}>
               <Table sx={{ minWidth: 800 }}>
@@ -321,9 +314,7 @@ export default function ComapanyCategoryPage() {
                   numSelected={selected.length}
                   headLabel={[
                     { id: "name", label: "Name" },
-                    { id: "empty" },
                     { id: "description", label: "Description" },
-                    { id: "" },
                   ]}
                 />
                 {categoryData && (
@@ -334,11 +325,11 @@ export default function ComapanyCategoryPage() {
                         page * rowsPerPage + rowsPerPage
                       )
                       .map((row) => (
-                        <UserTableRow
+                        <UserTableRowCategory
                           key={row._id}
                           id={row._id}
                           name={row.name}
-                          descripiton={row.description}
+                          description={row.description}
                           image={row.image}
                           isCategory
                         />
@@ -348,7 +339,6 @@ export default function ComapanyCategoryPage() {
               </Table>
             </TableContainer>
           </Scrollbar>
-
           {categoryData && (
             <TablePagination
               page={page}

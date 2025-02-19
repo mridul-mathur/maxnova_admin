@@ -42,7 +42,13 @@ export default function UpdateCustom() {
 
   const patchPvt = () => {
     const formData = new FormData();
-    const fields = ["head_custom", "image_alt_custom", "text_custom", "steps"];
+    const fields = [
+      "head_custom",
+      "image_alt_custom",
+      "text_custom",
+      "slogan",
+      "steps",
+    ];
 
     fields.forEach((field) =>
       formData.append(
@@ -86,15 +92,17 @@ export default function UpdateCustom() {
   return (
     state && (
       <Stack direction="column" spacing={2}>
-        {["head_custom", "text_custom", "image_alt_custom"].map((name) => (
-          <TextField
-            key={name}
-            name={name}
-            value={state[name]}
-            onChange={handleChange}
-            label={name}
-          />
-        ))}
+        {["head_custom", "text_custom", "slogan", "image_alt_custom"].map(
+          (name) => (
+            <TextField
+              key={name}
+              name={name}
+              value={state[name]}
+              onChange={handleChange}
+              label={name}
+            />
+          )
+        )}
         <img src={state.image_custom} alt="" height="100px" width="100px" />
         <input
           type="file"
