@@ -209,8 +209,14 @@ export default function ShopProductCard({
                   label="Ingredients"
                   sx={{
                     width: "350px",
+                    overflow: "auto",
+                    "& .MuiInputBase-root": {
+                      maxHeight: "100px",
+                      overflow: "auto",
+                    },
                   }}
                   multiline
+                  maxRows={4}
                   onChange={handleChangeIngredients}
                 />
                 <FormControlLabel
@@ -245,15 +251,16 @@ export default function ShopProductCard({
                     )}
                 </Box>
                 <Box>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ display: "none" }}
-                    id="image-file-input"
-                    name="img"
-                  />
                   <label htmlFor="image-file-input">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      style={{ display: "none" }}
+                      id="image-file-input"
+                      name="img"
+                    />
+
                     <Button variant="outlined" component="span">
                       Select Image
                     </Button>
@@ -272,7 +279,7 @@ export default function ShopProductCard({
       </Modal>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <a onClick={handleOpen}>
+        <Button onClick={handleOpen}>
           <Link
             color="inherit"
             underline="hover"
@@ -281,7 +288,7 @@ export default function ShopProductCard({
           >
             {product.name}
           </Link>
-        </a>
+        </Button>
         <Typography variant="subtitle2">
           Company name : {product.company_name}
         </Typography>
