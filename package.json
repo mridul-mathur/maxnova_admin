@@ -20,8 +20,8 @@
     "vite:build": "vite build"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.0",
-    "@emotion/styled": "^11.13.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@faker-js/faker": "^8.1.0",
     "@iconify/react": "^4.1.1",
     "@mui/base": "^5.0.0-beta.40",
@@ -47,7 +47,8 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.16.0",
     "redux": "^5.0.1",
-    "simplebar-react": "^3.2.4"
+    "simplebar-react": "^3.2.4",
+    "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@vitejs/plugin-react-swc": "^3.4.0",

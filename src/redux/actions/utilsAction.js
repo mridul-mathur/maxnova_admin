@@ -11,7 +11,8 @@ export const UPDATECUSTOMUTIL = "UPDATECUSTOMUTIL";
 export const GETCUSTOMUTIL = "GETCUSTOMUTIL";
 export const UPDATEABOUTUTIL = "UPDATEABOUTUTIL";
 export const GETABOUTUTIL = "GETABOUTUTIL";
-
+export const UPDATEBENTOUTIL = "UPDATEBENTOUTIL";
+export const GETBENTOUTIL = "GETBENTOUTIL";
 export const DELETECERTIFICATE = "DELETECERTIFICATE";
 export const ADDCERTIFICATE = "ADDCERTIFICATE";
 export const GETCERTIFICATE = "GETCERTIFICATE";
@@ -238,6 +239,39 @@ export function addCertificate(data) {
         dispatch(
           showSnackBar("Added New Certificate Successfully!", "success")
         );
+      })
+      .catch((error) => {
+        dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));
+      });
+  };
+}
+export function updateBentoUtil(id, data) {
+  return (dispatch) => {
+    axios
+      .patch(`/api/utils/patch-bento/${id}`, data)
+      .then((res) => {
+        dispatch(getBentoUtil());
+        dispatch({
+          type: UPDATEBENTOUTIL,
+          payload: res.data,
+        });
+        dispatch(showSnackBar("Updated Bento Grid Successfully!", "success"));
+      })
+      .catch((error) => {
+        dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));
+      });
+  };
+}
+
+export function getBentoUtil() {
+  return (dispatch) => {
+    axios
+      .get("/api/utils/get-bento")
+      .then((res) => {
+        dispatch({
+          type: GETBENTOUTIL,
+          payload: res.data,
+        });
       })
       .catch((error) => {
         dispatch(showSnackBar(error.response.data.errors[0].msg, "error"));

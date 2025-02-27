@@ -7,6 +7,7 @@ import UpdatePvt from "./editpvt";
 import UpdatePcd from "./editpcd";
 import UpdateHome from "./edithome";
 import UpdateAbout from "./editabout";
+import UpdateBento from "./editBento";
 import UpdateCustom from "./editcustom";
 import UpdateCertificates from "./editCertificates";
 
@@ -143,6 +144,23 @@ export default function EditContent() {
           Custom Formulation Utils
         </Typography>
         <UpdateCustom />
+      </Box>
+      <Box
+        sx={{
+          p: 5,
+          background: "#ffffff",
+          mt: 15,
+          borderRadius: "1rem",
+        }}
+      >
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
+          Bento Utils
+        </Typography>
+        <UpdateBento />
       </Box>
     </div>
   );
