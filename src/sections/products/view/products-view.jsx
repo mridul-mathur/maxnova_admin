@@ -1,41 +1,39 @@
-import { useEffect, useState, forwardRef } from "react";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect, forwardRef } from "react";
 
+import Fade from "@mui/material/Fade";
 import Stack from "@mui/material/Stack";
+import { css, styled } from "@mui/system";
+import Select from "@mui/material/Select";
+import Checkbox from "@mui/material/Checkbox";
+import MenuItem from "@mui/material/MenuItem";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Unstable_Grid2";
 import Typography from "@mui/material/Typography";
+import { Modal as BaseModal } from "@mui/base/Modal";
+import {
+  Box,
+  Button,
+  TextField,
+  InputLabel,
+  FormControl,
+  FormControlLabel,
+} from "@mui/material";
 
-import PropTypes from "prop-types";
-import { styled, css } from "@mui/system";
+import { getAllCompany } from "src/redux/actions/companyAction";
+import { getAllCategory } from "src/redux/actions/categoryAction";
 
 import ProductCard from "../product-card";
 import ProductSort from "../product-sort";
 import ProductFilters from "../product-filters";
 import ProductCartWidget from "../product-cart-widget";
-import { useDispatch, useSelector } from "react-redux";
 import {
-  getAllProducts,
   addNewProduct,
   deleteProduct,
   updateProduct,
+  getAllProducts,
 } from "../../../redux/actions/productAction";
-
-import { getAllCompany } from "src/redux/actions/companyAction";
-import { getAllCategory } from "src/redux/actions/categoryAction";
-
-import Fade from "@mui/material/Fade";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import { Modal as BaseModal } from "@mui/base/Modal";
-import {
-  Button,
-  FormControl,
-  InputLabel,
-  TextField,
-  Box,
-  FormControlLabel,
-} from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
 
 // ----------------------------------------------------------------------
 
@@ -54,9 +52,9 @@ export default function ProductsView() {
   const [getCompany, setGetCompany] = useState(null);
   const [getCategory, setGetCategory] = useState(null);
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.products.allproducts);
-  const company = useSelector((state) => state.company.allcompany);
-  const category = useSelector((state) => state.category.allcategory);
+  const products = useSelector((storeState) => storeState.products.allproducts);
+  const company = useSelector((storeState) => storeState.company.allcompany);
+  const category = useSelector((storeState) => storeState.category.allcategory);
   const [addProduct, setAddProduct] = useState(initialState);
 
   const [open, setOpen] = useState(false);
@@ -213,8 +211,10 @@ export default function ProductsView() {
             slots={{ backdrop: StyledBackdrop }}
           >
             <Fade in={open}>
-              <ModalContent sx={style}>
-                <Stack direction="row" spacing={25}>
+              <ModalContent
+                sx={{ ...style, maxHeight: "80vh", overflowY: "auto" }}
+              >
+                <Stack direction="row" spacing={5}>
                   <Stack direction="column" spacing={2}>
                     <TextField
                       name="name"
@@ -222,6 +222,9 @@ export default function ProductsView() {
                       label="Product Name"
                       sx={{
                         width: "350px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                       onChange={handleChangeProduct}
                     />
@@ -233,11 +236,10 @@ export default function ProductsView() {
                         value={addProduct.company_id}
                         label="Company"
                         onChange={handleChangeCompany}
-                        // sx={{b }}
                       >
-                        {getCompany && getCompany.length > 0 ? (
-                          getCompany?.map((data) => (
-                            <MenuItem name="company_id" value={data._id}>
+                        {getCompany?.length > 0 ? (
+                          getCompany.map((data) => (
+                            <MenuItem key={data._id} value={data._id}>
                               {data.name}
                             </MenuItem>
                           ))
@@ -251,15 +253,13 @@ export default function ProductsView() {
                         Category
                       </InputLabel>
                       <Select
-                        labelId="demo-simple-select-helper-label"
-                        id="demo-simple-select-helper"
                         value={addProduct.category_id}
                         label="Category"
                         onChange={handleChangeCategory}
                       >
-                        {getCategory && getCategory.length > 0 ? (
-                          getCategory?.map((data) => (
-                            <MenuItem name="company_id" value={data._id}>
+                        {getCategory?.length > 0 ? (
+                          getCategory.map((data) => (
+                            <MenuItem key={data._id} value={data._id}>
                               {data.name}
                             </MenuItem>
                           ))
@@ -274,6 +274,9 @@ export default function ProductsView() {
                       label="USP"
                       sx={{
                         width: "350px",
+                        maxHeight: "4.5em",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                       multiline
                       onChange={handleChangeUsp}
@@ -284,6 +287,9 @@ export default function ProductsView() {
                       label="Ingredients"
                       sx={{
                         width: "350px",
+                        maxHeight: "4.5em",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                       multiline
                       onChange={handleChangeIngredients}
@@ -305,19 +311,20 @@ export default function ProductsView() {
                           src={URL.createObjectURL(addProduct.image)}
                           width="250px"
                           height="250px"
+                          alt="Product Preview"
                         />
                       )}
                     </Box>
                     <Box>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        style={{ display: "none" }}
-                        id="image-file-input"
-                        name="img"
-                      />
                       <label htmlFor="image-file-input">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          style={{ display: "none" }}
+                          id="image-file-input"
+                        />
+
                         <Button variant="outlined" component="span">
                           Select Image
                         </Button>
@@ -378,15 +385,6 @@ const Backdrop = forwardRef((props, ref) => {
 
 Backdrop.propTypes = {
   open: PropTypes.bool,
-};
-
-const blue = {
-  200: "#99CCFF",
-  300: "#66B2FF",
-  400: "#3399FF",
-  500: "#007FFF",
-  600: "#0072E5",
-  700: "#0066CC",
 };
 
 const grey = {

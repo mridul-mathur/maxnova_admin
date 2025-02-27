@@ -31,6 +31,7 @@ import {
 const initialCategoryData = {
   name: "",
   description: "",
+  slogan: "",
   image: null,
 };
 
@@ -60,6 +61,7 @@ const CategoryTable = () => {
     setNewCategory({
       name: category?.name || "",
       description: category?.description || "",
+      slogan: category?.slogan || "",
       image: null,
     });
     setOpenDialog(true);
@@ -82,6 +84,7 @@ const CategoryTable = () => {
     const formData = new FormData();
     formData.append("name", newCategory.name);
     formData.append("description", newCategory.description);
+    formData.append("slogan", newCategory.slogan);
     if (newCategory.image) formData.append("image", newCategory.image);
 
     if (editingCategory) {
@@ -132,6 +135,7 @@ const CategoryTable = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Description</TableCell>
+
               <TableCell>Image</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
@@ -208,6 +212,16 @@ const CategoryTable = () => {
             label="Description"
             name="description"
             value={newCategory.description}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+          />
+          <TextField
+            label="Slogan"
+            name="slogan"
+            value={newCategory.slogan}
             onChange={handleInputChange}
             fullWidth
             margin="normal"

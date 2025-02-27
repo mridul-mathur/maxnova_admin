@@ -108,6 +108,25 @@ export default function EditContent() {
         <UpdatePvt />
       </Box>
 
+      {/* <Box
+        sx={{
+          p: 5,
+          mt: 15,
+          background: "#ffffff",
+
+          borderRadius: "1rem",
+        }}
+      >
+        <Typography
+          variant="h2"
+          textAlign="center"
+          sx={{ fontWeight: "bold", mb: 5 }}
+        >
+          Bento Grid
+        </Typography>
+        <UpdateBento />
+      </Box> */}
+
       <Box
         sx={{
           p: 5,

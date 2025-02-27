@@ -1,93 +1,61 @@
-import { useState, forwardRef, useEffect } from "react";
-
 import PropTypes from "prop-types";
+import { useState, useEffect, forwardRef } from "react";
 
-import { Box } from "@mui/material";
-import Link from "@mui/material/Link";
-import Card from "@mui/material/Card";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import { Modal as BaseModal } from "@mui/base/Modal";
-import { styled, css } from "@mui/system";
-import Fade from "@mui/material/Fade";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import { css, styled } from "@mui/system";
 import {
+  Box,
+  Card,
+  Fade,
+  Link,
+  Stack,
+  Select,
   Button,
-  FormControl,
-  InputLabel,
-  TextField,
-  FormControlLabel,
+  MenuItem,
   Checkbox,
+  TextField,
+  Typography,
+  InputLabel,
+  FormControl,
+  FormControlLabel,
+  Modal as BaseModal,
 } from "@mui/material";
-
-// ----------------------------------------------------------------------
 
 export default function ShopProductCard({
   product,
   company,
   category,
-  handleDelete = (id) => {},
-  handleEdit = (id, productDetails) => {},
+  handleDelete,
+  handleEdit,
 }) {
   const [open, setOpen] = useState(false);
+  const [updateState, setUpdateState] = useState(product);
+
+  useEffect(() => {
+    setUpdateState(product);
+  }, [product]);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setUpdateState(product);
     setOpen(false);
   };
 
-  const getCompany = company;
-  const getCategory = category;
-
-  const [updateState, setUpdateState] = useState(product);
-
-  const handleTopProduct = (event) => {
-    const { checked } = event.target;
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
     setUpdateState((prev) => ({
       ...prev,
-      is_top: checked,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleChangeProduct = (event) => {
-    const { value } = event.target;
-    setUpdateState((prev) => ({
-      ...prev,
-      name: value,
-    }));
-  };
-
-  const handleChangeUsp = (event) => {
-    const { value } = event.target;
-    setUpdateState((prev) => ({
-      ...prev,
-      usp: value,
-    }));
-  };
-
-  const handleChangeIngredients = (event) => {
-    const { value } = event.target;
-    setUpdateState((prev) => ({
-      ...prev,
-      ingredients: value,
-    }));
-  };
-
-  const handleChangeCompany = (event) => {
-    const { value } = event.target;
-    setUpdateState((prev) => ({
-      ...prev,
-      company_id: value,
-    }));
-  };
-
-  const handleChangeCategory = (event) => {
-    const { value } = event.target;
-    setUpdateState((prev) => ({
-      ...prev,
-      category_id: value,
-    }));
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setUpdateState((prev) => ({
+        ...prev,
+        image: file,
+      }));
+    }
   };
 
   const onDelete = () => {
@@ -100,155 +68,106 @@ export default function ShopProductCard({
     handleClose();
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    setUpdateState((prev) => ({
-      ...prev,
-      image: file,
-    }));
-  };
-
-  const renderImg = (
-    <Box
-      component="img"
-      alt={product.name}
-      src={product.image}
-      sx={{
-        top: 0,
-        width: 1,
-        height: 1,
-        objectFit: "cover",
-        position: "absolute",
-      }}
-    />
-  );
-
   return (
     <Card>
-      <Box sx={{ pt: "100%", position: "relative" }}>{renderImg}</Box>
+      <Box sx={{ pt: "100%", position: "relative" }}>
+        <Box
+          component="img"
+          alt={product.name}
+          src={product.image}
+          sx={{
+            top: 0,
+            width: 1,
+            height: 1,
+            objectFit: "cover",
+            position: "absolute",
+          }}
+        />
+      </Box>
 
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: StyledBackdrop }}
-      >
+      <Modal open={open} onClose={handleClose} closeAfterTransition>
         <Fade in={open}>
           <ModalContent sx={style}>
-            <Stack direction="row" spacing={25}>
+            <Stack direction="row" spacing={4}>
               <Stack direction="column" spacing={2}>
                 <TextField
                   name="name"
                   value={updateState.name}
                   label="Product Name"
-                  sx={{
-                    width: "350px",
-                  }}
-                  onChange={handleChangeProduct}
+                  sx={{ width: "350px" }}
+                  onChange={handleChange}
                 />
                 <FormControl>
-                  <InputLabel id="demo-simple-select-label">Company</InputLabel>
+                  <InputLabel>Company</InputLabel>
                   <Select
+                    name="company_id"
                     value={updateState.company_id}
-                    label="Company"
-                    onChange={handleChangeCompany}
+                    onChange={handleChange}
                   >
-                    {getCompany && getCompany.length > 0 ? (
-                      getCompany?.map((data) => (
-                        <MenuItem name="company_id" value={data._id}>
-                          {data.name}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem value="">none</MenuItem>
-                    )}
+                    {company?.map((data) => (
+                      <MenuItem key={data._id} value={data._id}>
+                        {data.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="demo-simple-select-label">
-                    Category
-                  </InputLabel>
+                  <InputLabel>Category</InputLabel>
                   <Select
-                    labelId="demo-simple-select-helper-label"
-                    id="demo-simple-select-helper"
+                    name="category_id"
                     value={updateState.category_id}
-                    label="Category"
-                    onChange={handleChangeCategory}
+                    onChange={handleChange}
                   >
-                    {getCategory && getCategory.length > 0 ? (
-                      getCategory?.map((data) => (
-                        <MenuItem name="company_id" value={data._id}>
-                          {data.name}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem value="">none</MenuItem>
-                    )}
+                    {category?.map((data) => (
+                      <MenuItem key={data._id} value={data._id}>
+                        {data.name}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
                 <TextField
                   name="usp"
                   value={updateState.usp}
                   label="USP"
-                  sx={{
-                    width: "350px",
-                  }}
+                  sx={{ width: "350px" }}
                   multiline
-                  onChange={handleChangeUsp}
+                  onChange={handleChange}
                 />
                 <TextField
                   name="ingredients"
                   value={updateState.ingredients}
                   label="Ingredients"
-                  sx={{
-                    width: "350px",
-                    overflow: "auto",
-                    "& .MuiInputBase-root": {
-                      maxHeight: "100px",
-                      overflow: "auto",
-                    },
-                  }}
+                  sx={{ width: "350px" }}
                   multiline
                   maxRows={4}
-                  onChange={handleChangeIngredients}
+                  onChange={handleChange}
                 />
                 <FormControlLabel
                   control={
                     <Checkbox
+                      name="is_top"
                       checked={updateState.is_top}
-                      onChange={handleTopProduct}
+                      onChange={handleChange}
                     />
                   }
                   label="Is Top Product?"
                 />
               </Stack>
+
               <Stack direction="column" spacing={5}>
                 <Box>
-                  {typeof updateState.image === "string" &&
-                    updateState.image && (
-                      <img
-                        src={updateState.image}
-                        alt="ima"
-                        width="250px"
-                        height="250px"
-                      />
-                    )}
-                  {typeof updateState.image !== "string" &&
-                    updateState.image && (
-                      <img
-                        src={URL.createObjectURL(updateState.image)}
-                        alt="ima"
-                        width="250px"
-                        height="250px"
-                      />
-                    )}
+                  {updateState.image && (
+                    <img
+                      src={
+                        typeof updateState.image === "string"
+                          ? updateState.image
+                          : URL.createObjectURL(updateState.image)
+                      }
+                      alt="preview"
+                      width="250px"
+                      height="250px"
+                    />
+                  )}
                 </Box>
                 <Box>
                   <label htmlFor="image-file-input">
@@ -258,7 +177,6 @@ export default function ShopProductCard({
                       onChange={handleFileChange}
                       style={{ display: "none" }}
                       id="image-file-input"
-                      name="img"
                     />
 
                     <Button variant="outlined" component="span">
@@ -267,7 +185,7 @@ export default function ShopProductCard({
                   </label>
                 </Box>
                 <Box>
-                  <Button onClick={onEdit}>Edit</Button>
+                  <Button onClick={onEdit}>Save</Button>
                   <Button color="error" onClick={onDelete}>
                     Delete
                   </Button>
@@ -290,10 +208,10 @@ export default function ShopProductCard({
           </Link>
         </Button>
         <Typography variant="subtitle2">
-          Company name : {product.company_name}
+          Company: {product.company_name}
         </Typography>
         <Typography variant="subtitle2">
-          Category name : {product.category_name}
+          Category: {product.category_name}
         </Typography>
       </Stack>
     </Card>
@@ -301,47 +219,20 @@ export default function ShopProductCard({
 }
 
 ShopProductCard.propTypes = {
-  product: PropTypes.object,
-  company: PropTypes.array,
-  category: PropTypes.array,
-  handleDelete: PropTypes.func,
-  handleEdit: PropTypes.func,
+  product: PropTypes.object.isRequired,
+  company: PropTypes.array.isRequired,
+  category: PropTypes.array.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  handleEdit: PropTypes.func.isRequired,
 };
 
-const Backdrop = forwardRef((props, ref) => {
-  const { open, ...other } = props;
-  return (
-    <Fade in={open}>
-      <div ref={ref} {...other} />
-    </Fade>
-  );
-});
+const Backdrop = forwardRef((props, ref) => (
+  <Fade in={props.open}>
+    <div ref={ref} {...props} />
+  </Fade>
+));
 
-Backdrop.propTypes = {
-  open: PropTypes.bool,
-};
-
-const blue = {
-  200: "#99CCFF",
-  300: "#66B2FF",
-  400: "#3399FF",
-  500: "#007FFF",
-  600: "#0072E5",
-  700: "#0066CC",
-};
-
-const grey = {
-  50: "#F3F6F9",
-  100: "#E5EAF2",
-  200: "#DAE2ED",
-  300: "#C7D0DD",
-  400: "#B0B8C4",
-  500: "#9DA8B7",
-  600: "#6B7A90",
-  700: "#434D5B",
-  800: "#303740",
-  900: "#1C2025",
-};
+Backdrop.propTypes = { open: PropTypes.bool };
 
 const Modal = styled(BaseModal)`
   position: fixed;
@@ -350,14 +241,6 @@ const Modal = styled(BaseModal)`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const StyledBackdrop = styled(Backdrop)`
-  z-index: -1;
-  position: fixed;
-  inset: 0;
-  background-color: rgb(0 0 0 / 0.5);
-  -webkit-tap-highlight-color: transparent;
 `;
 
 const style = {
@@ -373,60 +256,12 @@ const ModalContent = styled("div")(
     font-family: "IBM Plex Sans", sans-serif;
     font-weight: 500;
     text-align: start;
-    position: relative;
-    gap: 8px;
-    overflow: hidden;
-    background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
+    background-color: ${theme.palette.mode === "dark" ? "#1C2025" : "#fff"};
     border-radius: 8px;
-    border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
+    border: 1px solid ${theme.palette.mode === "dark" ? "#434D5B" : "#DAE2ED"};
     box-shadow: 0 4px 12px
-      ${theme.palette.mode === "dark" ? "rgb(0 0 0 / 0.5)" : "rgb(0 0 0 / 0.2)"};
+      ${theme.palette.mode === "dark" ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0.2)"};
     padding: 40px;
-    color: ${theme.palette.mode === "dark" ? grey[50] : grey[900]};
-
-    & .modal-title {
-      margin: 0;
-      line-height: 1.5rem;
-      margin-bottom: 8px;
-    }
-
-    & .modal-description {
-      margin: 0;
-      line-height: 1.5rem;
-      font-weight: 400;
-      color: ${theme.palette.mode === "dark" ? grey[400] : grey[800]};
-      margin-bottom: 4px;
-    }
+    color: ${theme.palette.mode === "dark" ? "#F3F6F9" : "#1C2025"};
   `
 );
-
-// const TriggerButton = styled(Button)(
-//   ({ theme }) => css`
-//     font-family: 'IBM Plex Sans', sans-serif;
-//     font-weight: 600;
-//     font-size: 0.875rem;
-//     line-height: 1.5;
-//     padding: 8px 16px;
-//     border-radius: 8px;
-//     transition: all 150ms ease;
-//     cursor: pointer;
-//     background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-//     border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-//     color: ${theme.palette.mode === 'dark' ? grey[200] : grey[900]};
-//     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-
-//     &:hover {
-//       background: ${theme.palette.mode === 'dark' ? grey[800] : grey[50]};
-//       border-color: ${theme.palette.mode === 'dark' ? grey[600] : grey[300]};
-//     }
-
-//     &:active {
-//       background: ${theme.palette.mode === 'dark' ? grey[700] : grey[100]};
-//     }
-
-//     &:focus-visible {
-//       box-shadow: 0 0 0 4px ${theme.palette.mode === 'dark' ? blue[300] : blue[200]};
-//       outline: none;
-//     }
-//   `,
-// );
