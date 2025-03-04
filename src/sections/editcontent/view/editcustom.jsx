@@ -61,6 +61,10 @@ export default function UpdateCustom() {
       formData.append("image_custom", state.image_custom);
     }
 
+    if (typeof state.image_hero_custom === "object") {
+      formData.append("image_hero_custom", state.image_hero_custom);
+    }
+
     dispatch(updateCustomUtil(state._id, formData));
   };
 
@@ -110,6 +114,20 @@ export default function UpdateCustom() {
           onChange={handleFileChange}
           name="image_custom"
         />
+
+        <img
+          src={state.image_hero_custom}
+          alt=""
+          height="100px"
+          width="100px"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          name="image_hero_custom"
+        />
+
         {["head", "text"].map((name) => (
           <TextField
             key={name}

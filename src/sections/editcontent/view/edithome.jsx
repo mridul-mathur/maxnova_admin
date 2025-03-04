@@ -101,14 +101,6 @@ export default function UpdateHome() {
       "subhead_quality",
       "text_quality",
       "image_alt_quality",
-      "head_whyus",
-      "text1_whyus",
-      "whylist_whyus",
-      "text2_whyus",
-      "text_3_whyus",
-      "image_alt_3_whyus",
-      "text_4_whyus",
-      "image_alt_4_whyus",
       "faqs",
       "numbs",
     ];
@@ -122,13 +114,7 @@ export default function UpdateHome() {
       )
     );
 
-    [
-      "image_about1",
-      "image_about2",
-      "image_quality",
-      "image_3_whyus",
-      "image_4_whyus",
-    ].forEach((field) => {
+    ["image_about1", "image_about2", "image_quality"].forEach((field) => {
       if (typeof state[field] === "object") {
         formData.append(field, state[field]);
       }
@@ -147,11 +133,6 @@ export default function UpdateHome() {
             "text_about",
             "subhead_quality",
             "text_quality",
-            "head_whyus",
-            "text1_whyus",
-            "text2_whyus",
-            "text_3_whyus",
-            "text_4_whyus",
           ].map((name) => (
             <Grid item md={6} key={name}>
               <TextField
@@ -164,16 +145,6 @@ export default function UpdateHome() {
               />
             </Grid>
           ))}
-          <Grid item md={12}>
-            <TextField
-              fullWidth
-              name="whylist_whyus"
-              value={state.whylist_whyus || ""}
-              onChange={handleChange}
-              label="whylist_whyus (Coma separated list)"
-              variant="outlined"
-            />
-          </Grid>
         </Grid>
         <Typography variant="h6">Images</Typography>
         <Grid container spacing={2}>
@@ -192,16 +163,6 @@ export default function UpdateHome() {
               name: "image_quality",
               src: state.image_quality,
               alt: state.image_alt_quality,
-            },
-            {
-              name: "image_3_whyus",
-              src: state.image_3_whyus,
-              alt: state.image_alt_3_whyus,
-            },
-            {
-              name: "image_4_whyus",
-              src: state.image_4_whyus,
-              alt: state.image_alt_4_whyus,
             },
           ].map(({ name, src, alt }) => (
             <Grid item xs={12} md={6} key={name} sx={{ textAlign: "center" }}>

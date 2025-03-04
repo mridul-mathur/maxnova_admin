@@ -46,6 +46,9 @@ export default function UpdatePcd() {
     if (typeof state.image_pcd === "object") {
       formData.append("image_pcd", state.image_pcd);
     }
+    if (typeof state.image_hero_pcd === "object") {
+      formData.append("image_hero_pcd", state.image_hero_pcd);
+    }
 
     dispatch(updatePcdUtil(state._id, formData));
   };
@@ -77,16 +80,61 @@ export default function UpdatePcd() {
               <Typography variant="h6" sx={{ my: 1, textAlign: "left" }}>
                 PCD Image
               </Typography>
-              <img
-                src={state.image_pcd}
-                alt={state.image_alt_pcd || "PCD Image"}
-                height="100px"
-                style={{
-                  borderRadius: "8px",
-                  marginTop: "1em",
-                  marginBottom: "1em",
-                }}
-              />
+              <Box>
+                <img
+                  src={state.image_hero_pcd}
+                  alt={state.image_alt_pcd || "PCD Image"}
+                  height="100px"
+                  style={{
+                    borderRadius: "8px",
+                    marginTop: "1em",
+                    marginBottom: "1em",
+                  }}
+                />
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  component="label"
+                  sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+                >
+                  Upload image_hero_pcd
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="image_hero_pcd"
+                    hidden
+                  />
+                </Button>
+              </Box>
+              <Box>
+                <img
+                  src={state.image_pcd}
+                  alt={state.image_alt_pcd || "PCD Image"}
+                  height="100px"
+                  style={{
+                    borderRadius: "8px",
+                    marginTop: "1em",
+                    marginBottom: "1em",
+                  }}
+                />
+
+                <Button
+                  size="medium"
+                  variant="outlined"
+                  component="label"
+                  sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
+                >
+                  Upload image_pcd
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    name="image_pcd"
+                    hidden
+                  />
+                </Button>
+              </Box>
               <TextField
                 fullWidth
                 name="image_alt_pcd"
@@ -96,21 +144,6 @@ export default function UpdatePcd() {
                 variant="outlined"
                 sx={{ my: 1 }}
               />
-              <Button
-                size="medium"
-                variant="outlined"
-                component="label"
-                sx={{ my: 1, width: "fit-content", alignSelf: "center" }}
-              >
-                Upload image_pcd
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  name="image_pcd"
-                  hidden
-                />
-              </Button>
             </Box>
           </Grid>
         </Grid>

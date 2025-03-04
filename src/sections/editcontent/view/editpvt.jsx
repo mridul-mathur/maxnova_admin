@@ -55,6 +55,9 @@ export default function UpdatePvt() {
       formData.append("image_pvt", state.image_pvt);
     }
 
+    if (typeof state.image_hero_pvt === "object") {
+      formData.append("image_hero_pvt", state.image_hero_hpvt);
+    }
     dispatch(updatePvtUtil(state._id, formData));
   };
 
@@ -101,6 +104,14 @@ export default function UpdatePvt() {
           accept="image/*"
           onChange={handleFileChange}
           name="image_pvt"
+        />
+
+        <img src={state.image_hero_pvt} alt="" height="100px" width="100px" />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          name="image_hero_pvt"
         />
         {["head", "text"].map((name) => (
           <TextField
