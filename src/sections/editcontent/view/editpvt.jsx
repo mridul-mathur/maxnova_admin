@@ -56,7 +56,7 @@ export default function UpdatePvt() {
     }
 
     if (typeof state.image_hero_pvt === "object") {
-      formData.append("image_hero_pvt", state.image_hero_hpvt);
+      formData.append("image_hero_pvt", state.image_hero_pvt);
     }
     dispatch(updatePvtUtil(state._id, formData));
   };
