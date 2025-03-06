@@ -43,18 +43,15 @@ export default function UpdatePvt() {
   const patchPvt = () => {
     const formData = new FormData();
     const fields = ["head_pvt", "image_alt_pvt", "text_pvt", "slogan", "steps"];
-
     fields.forEach((field) =>
       formData.append(
         field,
         field === "steps" ? JSON.stringify(state[field]) : state[field]
       )
     );
-
     if (typeof state.image_pvt === "object") {
       formData.append("image_pvt", state.image_pvt);
     }
-
     if (typeof state.image_hero_pvt === "object") {
       formData.append("image_hero_pvt", state.image_hero_pvt);
     }

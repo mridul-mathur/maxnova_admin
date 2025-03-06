@@ -101,6 +101,7 @@ export default function UpdateHome() {
       "subhead_quality",
       "text_quality",
       "image_alt_quality",
+      "slogan",
       "faqs",
       "numbs",
     ];
@@ -133,6 +134,7 @@ export default function UpdateHome() {
             "text_about",
             "subhead_quality",
             "text_quality",
+            "slogan",
           ].map((name) => (
             <Grid item md={6} key={name}>
               <TextField
