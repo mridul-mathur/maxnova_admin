@@ -111,7 +111,6 @@ export default function UpdateBento() {
             "service_bento.box1_image",
             "service_bento.value1_image",
             "service_bento.value2_image",
-            "vertical_bento.box1_image",
             "service_bento.contact_image",
           ].map((name) => {
             const [parent, child] = name.split(".");

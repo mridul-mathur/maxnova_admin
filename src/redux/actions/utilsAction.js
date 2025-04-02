@@ -245,6 +245,7 @@ export function addCertificate(data) {
       });
   };
 }
+
 export function updateBentoUtil(id, data) {
   return (dispatch) => {
     axios

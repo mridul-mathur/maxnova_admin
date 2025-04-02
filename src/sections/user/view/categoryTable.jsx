@@ -33,6 +33,7 @@ const initialCategoryData = {
   description: "",
   slogan: "",
   image: null,
+  bentoimage: null,
 };
 
 const CategoryTable = () => {
@@ -63,6 +64,7 @@ const CategoryTable = () => {
       description: category?.description || "",
       slogan: category?.slogan || "",
       image: null,
+      bentoimage: null,
     });
     setOpenDialog(true);
   };
@@ -86,6 +88,8 @@ const CategoryTable = () => {
     formData.append("description", newCategory.description);
     formData.append("slogan", newCategory.slogan);
     if (newCategory.image) formData.append("image", newCategory.image);
+    if (newCategory.bentoimage)
+      formData.append("bentoimage", newCategory.bentoimage);
 
     if (editingCategory) {
       dispatch(updateCategory(editingCategory._id, formData));
@@ -138,6 +142,9 @@ const CategoryTable = () => {
 
               <TableCell>Image</TableCell>
               <TableCell align="center">Actions</TableCell>
+
+              <TableCell>BentoImage</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -159,6 +166,21 @@ const CategoryTable = () => {
                       />
                     ) : (
                       "No Image"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {category.bentoimage ? (
+                      <img
+                        src={category.bentoimage}
+                        alt={category.name}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      "No bentoimage"
                     )}
                   </TableCell>
                   <TableCell
@@ -193,8 +215,6 @@ const CategoryTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Add/Edit Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
           {editingCategory ? "Edit Category" : "Add Category"}
@@ -234,6 +254,15 @@ const CategoryTable = () => {
           <input
             type="file"
             name="image"
+            onChange={handleInputChange}
+            accept="image/*"
+          />
+          <Typography variant="subtitle1" sx={{ mt: 2 }}>
+            Upload Bento Image
+          </Typography>
+          <input
+            type="file"
+            name="bentoimage"
             onChange={handleInputChange}
             accept="image/*"
           />
