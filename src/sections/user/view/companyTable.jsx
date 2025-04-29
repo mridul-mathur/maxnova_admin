@@ -60,8 +60,8 @@ const CompanyTable = () => {
     setNewCompany({
       name: company?.name || "",
       description: company?.description || "",
-      image: null,
-      catalog: null,
+      image: company?.image || null,
+      catalog: company?.catalog || null,
     });
     setOpenDialog(true);
   };
@@ -73,26 +73,81 @@ const CompanyTable = () => {
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
-    setNewCompany((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+    if (files && files[0]) {
+      // For file inputs (image and catalog)
+      const file = files[0];
+      console.log(`New ${name} file:`, file);
+      setNewCompany((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+    } else {
+      // For text inputs (name and description)
+      setNewCompany((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSaveCompany = () => {
     const formData = new FormData();
     formData.append("name", newCompany.name);
     formData.append("description", newCompany.description);
-    if (newCompany.image) formData.append("image", newCompany.image);
-    if (newCompany.catalog) formData.append("catalog", newCompany.catalog);
 
-    if (editingCompany) {
-      dispatch(updateCompany(editingCompany._id, formData));
-    } else {
-      dispatch(addNewCompany(formData));
+    // Handle image update
+    if (newCompany.image) {
+      if (typeof newCompany.image === "string") {
+        // If it's a string (existing image URL), don't append it
+        console.log("Using existing image:", newCompany.image);
+      } else {
+        // If it's a File object (new image), append it
+        formData.append("image", newCompany.image);
+        console.log("Appending new image:", newCompany.image.name);
+      }
     }
 
-    handleCloseDialog();
+    // Handle catalog update
+    if (newCompany.catalog) {
+      if (typeof newCompany.catalog === "string") {
+        // If it's a string (existing catalog URL), don't append it
+        console.log("Using existing catalog:", newCompany.catalog);
+      } else {
+        // If it's a File object (new catalog), append it
+        formData.append("catalog", newCompany.catalog);
+        console.log("Appending new catalog:", newCompany.catalog.name);
+      }
+    }
+
+    // Log FormData contents
+    console.log("FormData contents before submission:");
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value instanceof File ? `${value.name} (File)` : value);
+    }
+
+    if (editingCompany) {
+      console.log("Updating company:", editingCompany._id);
+      dispatch(updateCompany(editingCompany._id, formData))
+        .then(() => {
+          console.log("Company updated successfully");
+          handleCloseDialog();
+        })
+        .catch((error) => {
+          console.error("Error updating company:", error);
+          // You might want to show an error message to the user here
+        });
+    } else {
+      console.log("Adding new company");
+      dispatch(addNewCompany(formData))
+        .then(() => {
+          console.log("Company added successfully");
+          handleCloseDialog();
+        })
+        .catch((error) => {
+          console.error("Error adding company:", error);
+          // You might want to show an error message to the user here
+        });
+    }
   };
 
   const handleOpenDeleteDialog = (id) => {

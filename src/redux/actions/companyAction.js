@@ -78,10 +78,11 @@ export function updateCompany(id, data) {
     axios
       .patch(`api/company/${id}`, data, {
         headers: {
-          "Content-Type": "multipart/form-data", // Ensure proper headers for file upload
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
+        console.log("Update response:", res.data);
         dispatch(getAllCompany());
         dispatch({
           type: UPDATECOMPANY,
@@ -90,6 +91,7 @@ export function updateCompany(id, data) {
         dispatch(showSnackBar("Updated Company Successfully!", "success"));
       })
       .catch((error) => {
+        console.error("Update error:", error);
         const errorMsg =
           error.response?.data?.errors?.[0]?.msg || "Failed to update company.";
         dispatch(showSnackBar(errorMsg, "error"));

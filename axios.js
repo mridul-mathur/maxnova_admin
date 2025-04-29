@@ -1,20 +1,17 @@
 import axios from "axios";
 
-if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-  axios.defaults.baseURL = "http://127.0.0.1:8000/";
-} else {
-  axios.defaults.baseURL = "http://127.0.0.1:8000/";
-}
-axios.defaults.baseURL = "http://localhost:4000/";
+// Set the base URL for all axios requests
+axios.defaults.baseURL = "http://localhost:4000";
 
-//maxnovabackend-38x5s.ondigitalocean.app/
-
-https: axios.interceptors.response.use(
+// Add response interceptor for handling 401 errors
+axios.interceptors.response.use(
   function (response) {
+    console.log("Response:", response);
     return response;
   },
   function (error) {
-    if (error.response.status === 401) {
+    console.error("Error:", error);
+    if (error.response?.status === 401) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("username");
       delete axios.defaults.headers.common.Authorization;
@@ -24,6 +21,7 @@ https: axios.interceptors.response.use(
   }
 );
 
+// Configure default headers
 axios.defaults.withCredentials = true;
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "_xsrf";

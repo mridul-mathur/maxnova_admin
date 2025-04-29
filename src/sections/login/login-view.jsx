@@ -30,8 +30,8 @@ export default function LoginView() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({
-    username: "",
-    password: "",
+    username: "admin",
+    password: "maxnova",
   });
 
   const handleChange = (e) => {
@@ -48,6 +48,12 @@ export default function LoginView() {
   }, [isAuthenticated]);
 
   const handleClick = () => {
+    if (!userInfo.username || !userInfo.password) {
+      dispatchRedux(
+        showSnackBar("Please enter both username and password", "error")
+      );
+      return;
+    }
     login(userInfo.username, userInfo.password);
   };
 
