@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Set the base URL for all axios requests
-axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.baseURL = "https://maxnovabackend-38x5s.ondigitalocean.app/";
 
 // Add response interceptor for handling 401 errors
 axios.interceptors.response.use(
