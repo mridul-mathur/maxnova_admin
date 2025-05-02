@@ -87,7 +87,7 @@ export default function UpdateHome() {
       ...prev,
       numbs: temp,
     }));
-    setNumb({ numb: 0, head: "" });
+    setNumb({ numb: "", head: "" });
   };
 
   const patchHome = () => {
@@ -271,11 +271,11 @@ export default function UpdateHome() {
                 <TextField
                   fullWidth
                   name={name}
-                  value={numb[name] || 0}
+                  value={numb[name] || ""}
                   onChange={handleChangeNumbs}
                   label={name}
                   variant="outlined"
-                  type="number"
+                  type="text"
                 />
               ) : (
                 <TextField
