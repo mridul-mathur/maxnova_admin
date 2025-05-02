@@ -8,7 +8,7 @@ import { getHomeUtil, updateHomeUtil } from "src/redux/actions/utilsAction";
 export default function UpdateHome() {
   const [state, setState] = useState(null);
   const [faq, setFaq] = useState({ ques: "", ans: "" });
-  const [numb, setNumb] = useState({ numb: 0, head: "" });
+  const [numb, setNumb] = useState({ numb: "", head: "" });
 
   const dispatch = useDispatch();
   const home = useSelector((reduxState) => reduxState.utils.homeutil);
